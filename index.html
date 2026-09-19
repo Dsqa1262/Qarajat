@@ -398,8 +398,23 @@ input[type="radio"]:focus-visible{
 /* ============== DANGER ZONE ============== */
 .danger-zone{padding-bottom:20px}
 </style>
+  <meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Qarajat">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
 </head>
 <body>
+  <button id="qarajat-install-btn" type="button" style="
+  display: none; position: fixed; right: 16px; bottom: 16px; z-index: 9999;
+  padding: 12px 18px; border: none; border-radius: 12px;
+  background: #0f172a; color: #fff; font-size: 14px; font-weight: 600;
+  cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.3);">
+  ⬇ Скачать приложение
+</button>
 <div class="app">
   <header class="topbar" id="topbar"></header>
   <main id="view"></main>
@@ -2657,4 +2672,51 @@ render();
 })();
 </script>
 </body>
+  <script>
+(function () {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+        .catch(function (e) { console.warn('SW failed', e); });
+    });
+  }
+
+  var btn = document.getElementById('qarajat-install-btn');
+  if (!btn) return;
+
+  var prompt = null;
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+
+  if (isStandalone) return;
+  if (isIOS) btn.style.display = 'block';
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    prompt = e;
+    btn.style.display = 'block';
+  });
+
+  btn.addEventListener('click', function () {
+    if (prompt) {
+      prompt.prompt();
+      prompt.userChoice.then(function () {
+        btn.style.display = 'none';
+        prompt = null;
+      });
+      return;
+    }
+    if (isIOS) {
+      alert('iPhone:\n\n1. Нажмите «Поделиться» (квадрат со стрелкой).\n2. Выберите «На экран Домой».\n3. Нажмите «Добавить».');
+      return;
+    }
+    alert('Откройте меню браузера (⋮) и выберите:\n\n«Установить приложение»\nили «Добавить на главный экран».');
+  });
+
+  window.addEventListener('appinstalled', function () {
+    btn.style.display = 'none';
+  });
+})();
+</script>
 </html>
