@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Иконки Qarajat</title>
+<style>body{font:16px Arial;padding:30px}
+button{display:block;margin:10px 0;padding:14px 24px;border:none;border-radius:10px;
+background:#0f172a;color:#fff;font-size:16px;cursor:pointer}</style></head>
+<body>
+<h2>Нажми 4 кнопки — скачаются 4 иконки</h2>
+<button onclick="gen(192,'icon-192.png')">1. Скачать icon-192.png</button>
+<button onclick="gen(512,'icon-512.png')">2. Скачать icon-512.png</button>
+<button onclick="gen(512,'icon-maskable-512.png',true)">3. Скачать icon-maskable-512.png</button>
+<button onclick="gen(180,'apple-touch-icon.png')">4. Скачать apple-touch-icon.png</button>
+<script>
+function gen(size, name, maskable){
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  const x = c.getContext('2d');
+  x.fillStyle = '#0f172a';
+  x.fillRect(0, 0, size, size);
+  const pad = maskable ? size * 0.18 : 0;
+  x.fillStyle = '#ffffff';
+  x.font = 'bold ' + ((size - pad*2) * 0.72) + 'px Arial';
+  x.textAlign = 'center';
+  x.textBaseline = 'middle';
+  x.fillText('Q', size/2, size/2 + size*0.03);
+  const a = document.createElement('a');
+  a.href = c.toDataURL('image/png');
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+</script>
+</body></html>
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Qarajat">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
