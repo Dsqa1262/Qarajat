@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'qarajat-v4';
+const CACHE_VERSION = 'qarajat-v5';
 const CACHE_NAME = CACHE_VERSION;
 
 const PRECACHE_URLS = [
