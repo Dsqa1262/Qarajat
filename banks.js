@@ -336,53 +336,63 @@
     render();
   }
   /* ---------- Перехват навигации ---------- */
+   /* ---------- Перехват навигации Qarajat ---------- */
+  // Qarajat использует hash-роутинг через глобальный метод navigate().
+  // Перехватываем на максимально раннем этапе.
+
   function show() {
     ensureRoot();
     root.style.display = 'block';
     render();
-    // Скрываем основной интерфейс Qarajat, чтобы он не мешал
-    var main = document.querySelector('main') || document.querySelector('#app') ||
-               document.querySelector('.app') || document.querySelector('#root');
-    if (main) main.style.visibility = 'hidden';
   }
 
   function hide() {
     if (root) root.style.display = 'none';
-    var main = document.querySelector('main') || document.querySelector('#app') ||
-               document.querySelector('.app') || document.querySelector('#root');
-    if (main) main.style.visibility = '';
   }
 
-  function checkHash() {
-    if (location.hash === '#banks') show();
-    else hide();
+  function isBanksRoute() {
+    return location.hash === '#banks';
   }
 
-  // Перехватываем hashchange в фазе перехвата (capture) — наш сработает РАНЬШЕ роутера Qarajat.
+  // 1. Перехват hashchange — раньше всех, capture: true
   window.addEventListener('hashchange', function (e) {
-    if (location.hash === '#banks') {
+    if (isBanksRoute()) {
       e.stopImmediatePropagation();
     }
-    checkHash();
+    if (isBanksRoute()) show(); else hide();
   }, true);
 
-  // Перехватываем клики по ссылкам с href="#banks"
+  // 2. Перехват кликов по кнопке меню "Банки"
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a[href="#banks"], a[href$="/#banks"]');
-    if (a) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      if (location.hash !== '#banks') location.hash = '#banks';
-      else show();
-      return false;
+    var el = e.target;
+    while (el && el !== document.body) {
+      // ищем клик по элементу с data-route или по навигационному элементу меню
+      if (el.dataset && (el.dataset.route === 'banks' || el.dataset.id === 'banks')) {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        try { history.pushState(null, '', '#banks'); } catch (err) { location.hash = '#banks'; }
+        show();
+        return false;
+      }
+      if (el.tagName === 'A' && el.getAttribute('href') === '#banks') {
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        try { history.pushState(null, '', '#banks'); } catch (err) { location.hash = '#banks'; }
+        show();
+        return false;
+      }
+      el = el.parentNode;
     }
   }, true);
 
-  // При загрузке — проверяем, может уже открыт #banks
+  // 3. Обработка при загрузке
+  function init() {
+    if (isBanksRoute()) show();
+  }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkHash);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    checkHash();
+    init();
   }
 
   window.QarajatBanks = { open: show, close: hide, render: render };
