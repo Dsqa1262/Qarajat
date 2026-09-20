@@ -1,5 +1,5 @@
-/* Qarajat — Раздел «Банки» v1
- * Изолированный модуль. Не трогает существующий код Qarajat.
+/* Qarajat — Раздел «Банки» v2
+ * Изолированный модуль. Перехватывает навигацию.
  * Открывается по ссылке: .../#banks
  */
 (function () {
@@ -99,6 +99,9 @@
     ensureRoot();
     root.style.display = 'block';
     render();
+    // Скрываем остальной интерфейс Qarajat, если он есть
+    var appRoot = document.getElementById('app') || document.body;
+    // Здесь можно добавить логику скрытия, если нужно
   }
 
   function close() {
@@ -333,21 +336,34 @@
     render();
   }
 
-  /* ---------- Роутинг ---------- */
-  function checkRoute() {
+  /* ---------- Перехват навигации ---------- */
+  function handleHash() {
     if (location.hash === '#banks') {
       open();
-    } else if (root && root.style.display === 'block') {
-      root.style.display = 'none';
+    } else {
+      if (root && root.style.display === 'block') {
+        root.style.display = 'none';
+      }
     }
   }
 
-  window.addEventListener('hashchange', checkRoute);
+  // Перехватываем событие hashchange на фазе перехвата (capture),
+  // чтобы наш обработчик сработал раньше основного роутера Qarajat.
+  window.addEventListener('hashchange', function(e) {
+    if (location.hash === '#banks') {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    }
+    handleHash();
+  }, true); // true = фаза перехвата
+
+  // Также проверяем при загрузке
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', checkRoute);
+    document.addEventListener('DOMContentLoaded', handleHash);
   } else {
-    checkRoute();
+    handleHash();
   }
 
+  // Экспорт для ручного вызова
   window.QarajatBanks = { open: open, close: close, render: render };
 })();
