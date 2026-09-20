@@ -1,10 +1,11 @@
-const CACHE_VERSION = 'qarajat-v5';
+const CACHE_VERSION = 'qarajat-v6';
 const CACHE_NAME = CACHE_VERSION;
 
 const PRECACHE_URLS = [
   './',
   './index.html',
   './manifest.json',
+    './banks.js',
   './icons/icon-192-v2.png',
   './icons/icon-512-v2.png',
   './icons/icon-maskable-512-v2.png',
