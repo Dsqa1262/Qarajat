@@ -1,12 +1,14 @@
-/* Qarajat — Раздел «Банки» v2
- * Изолированный модуль. Перехватывает навигацию.
- * Открывается по ссылке: .../#banks
+/* Qarajat — Раздел «Банки» v4
+ * Полностью изолированный экран. Скрывает интерфейс Qarajat,
+ * пока открыт #banks. Не трогает роутер Qarajat.
  */
 (function () {
   'use strict';
 
   var STORAGE_KEY = 'qarajat_accounts_v1';
   var SCREEN_ID = 'qarajat-banks-screen';
+  var HIDDEN_ATTR = 'data-q-banks-hidden';
+  var PREV_DISPLAY = 'data-q-banks-prev';
 
   /* ---------- Справочник банков РК ---------- */
   var BANKS = [
@@ -51,26 +53,19 @@
       return Array.isArray(arr) ? arr : [];
     } catch (e) { return []; }
   }
-
   function saveAccounts(list) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
   }
-
-  function uid() {
-    return 'a_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  }
-
+  function uid() { return 'a_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function bankById(id) {
     for (var i = 0; i < BANKS.length; i++) if (BANKS[i].id === id) return BANKS[i];
     return BANKS[BANKS.length - 1];
   }
-
   function fmtMoney(n, cur) {
     n = Number(n) || 0;
     var s = Math.abs(n).toLocaleString('ru-RU');
     return (n < 0 ? '-' : '') + s + ' ' + (cur || 'KZT');
   }
-
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -86,7 +81,7 @@
     el = document.createElement('div');
     el.id = SCREEN_ID;
     el.style.cssText = [
-      'display:none', 'position:fixed', 'inset:0', 'z-index:9998',
+      'display:none', 'position:fixed', 'inset:0', 'z-index:2147483000',
       'background:#0b2b1e', 'color:#fff', 'overflow-y:auto',
       "font:16px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif",
       '-webkit-overflow-scrolling:touch'
@@ -95,20 +90,46 @@
     root = el;
   }
 
-  function open() {
-    ensureRoot();
-    root.style.display = 'block';
-    render();
-    // Скрываем остальной интерфейс Qarajat, если он есть
-    var appRoot = document.getElementById('app') || document.body;
-    // Здесь можно добавить логику скрытия, если нужно
+  /* Скрыть всё содержимое body, кроме нашего экрана */
+  function hideQarajat() {
+    var children = document.body.children;
+    for (var i = 0; i < children.length; i++) {
+      var el = children[i];
+      if (el.id === SCREEN_ID) continue;
+      if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.tagName === 'LINK') continue;
+      if (!el.hasAttribute(HIDDEN_ATTR)) {
+        el.setAttribute(PREV_DISPLAY, el.style.display || '');
+        el.setAttribute(HIDDEN_ATTR, '1');
+      }
+      el.style.setProperty('display', 'none', 'important');
+    }
   }
 
-  function close() {
-    if (root) root.style.display = 'none';
-    if (location.hash === '#banks') {
-      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; }
+  /* Показать Qarajat обратно */
+  function showQarajat() {
+    var children = document.body.children;
+    for (var i = 0; i < children.length; i++) {
+      var el = children[i];
+      if (el.id === SCREEN_ID) continue;
+      if (el.hasAttribute(HIDDEN_ATTR)) {
+        var prev = el.getAttribute(PREV_DISPLAY) || '';
+        el.removeAttribute(HIDDEN_ATTR);
+        el.style.removeProperty('display');
+        if (prev) el.style.display = prev;
+      }
     }
+  }
+
+  function show() {
+    ensureRoot();
+    root.style.display = 'block';
+    hideQarajat();
+    render();
+  }
+
+  function hide() {
+    if (root) root.style.display = 'none';
+    showQarajat();
   }
 
   /* ---------- Рендер ---------- */
@@ -209,7 +230,10 @@
       banksHtml +
       '</div>';
 
-    document.getElementById('q-banks-close').onclick = close;
+    document.getElementById('q-banks-close').onclick = function () {
+      hide();
+      location.hash = '#dashboard';
+    };
     document.getElementById('q-banks-add').onclick = function () { openForm(null); };
     var editBtns = root.querySelectorAll('[data-edit]');
     for (var i = 0; i < editBtns.length; i++) {
@@ -237,7 +261,7 @@
     };
 
     var modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);' +
+    modal.style.cssText = 'position:fixed;inset:0;z-index:2147483600;background:rgba(0,0,0,.7);' +
       'display:flex;align-items:flex-end;justify-content:center;';
 
     var banksOpts = BANKS.map(function (b) {
@@ -335,49 +359,21 @@
     saveAccounts(list.filter(function (x) { return x.id !== id; }));
     render();
   }
-  /* ---------- Перехват навигации ---------- */
-   /* ---------- Перехват навигации Qarajat ---------- */
-  // Qarajat использует hash-роутинг через глобальный метод navigate().
-  // Перехватываем на максимально раннем этапе.
 
-  function show() {
-    ensureRoot();
-    root.style.display = 'block';
-    render();
+  /* ---------- Перехват: клик по кнопке "Банки" и hash = #banks ---------- */
+  function checkRoute() {
+    if (location.hash === '#banks') show();
+    else hide();
   }
 
-  function hide() {
-    if (root) root.style.display = 'none';
-  }
-
-  function isBanksRoute() {
-    return location.hash === '#banks';
-  }
-
-  // 1. Перехват hashchange — раньше всех, capture: true
-  window.addEventListener('hashchange', function (e) {
-    if (isBanksRoute()) {
-      e.stopImmediatePropagation();
-    }
-    if (isBanksRoute()) show(); else hide();
-  }, true);
-
-  // 2. Перехват кликов по кнопке меню "Банки"
+  // 1. Перехватываем клик по элементу навигации с data-route="banks"
   document.addEventListener('click', function (e) {
     var el = e.target;
     while (el && el !== document.body) {
-      // ищем клик по элементу с data-route или по навигационному элементу меню
       if (el.dataset && (el.dataset.route === 'banks' || el.dataset.id === 'banks')) {
-        e.stopImmediatePropagation();
         e.preventDefault();
-        try { history.pushState(null, '', '#banks'); } catch (err) { location.hash = '#banks'; }
-        show();
-        return false;
-      }
-      if (el.tagName === 'A' && el.getAttribute('href') === '#banks') {
         e.stopImmediatePropagation();
-        e.preventDefault();
-        try { history.pushState(null, '', '#banks'); } catch (err) { location.hash = '#banks'; }
+        try { history.pushState({ tab: 'banks' }, '', '#banks'); } catch (err) { location.hash = '#banks'; }
         show();
         return false;
       }
@@ -385,14 +381,25 @@
     }
   }, true);
 
-  // 3. Обработка при загрузке
-  function init() {
-    if (isBanksRoute()) show();
-  }
+  // 2. Следим за hash — раньше всех
+  window.addEventListener('hashchange', function () {
+    setTimeout(checkRoute, 0);
+  }, true);
+
+  // 3. Polling — страховка от перезаписи hash роутером Qarajat
+  var lastHash = null;
+  setInterval(function () {
+    if (location.hash !== lastHash) {
+      lastHash = location.hash;
+      checkRoute();
+    }
+  }, 200);
+
+  // 4. Первичная проверка
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', checkRoute);
   } else {
-    init();
+    checkRoute();
   }
 
   window.QarajatBanks = { open: show, close: hide, render: render };
