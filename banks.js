@@ -335,35 +335,55 @@
     saveAccounts(list.filter(function (x) { return x.id !== id; }));
     render();
   }
-
   /* ---------- Перехват навигации ---------- */
-  function handleHash() {
-    if (location.hash === '#banks') {
-      open();
-    } else {
-      if (root && root.style.display === 'block') {
-        root.style.display = 'none';
-      }
-    }
+  function show() {
+    ensureRoot();
+    root.style.display = 'block';
+    render();
+    // Скрываем основной интерфейс Qarajat, чтобы он не мешал
+    var main = document.querySelector('main') || document.querySelector('#app') ||
+               document.querySelector('.app') || document.querySelector('#root');
+    if (main) main.style.visibility = 'hidden';
   }
 
-  // Перехватываем событие hashchange на фазе перехвата (capture),
-  // чтобы наш обработчик сработал раньше основного роутера Qarajat.
-  window.addEventListener('hashchange', function(e) {
+  function hide() {
+    if (root) root.style.display = 'none';
+    var main = document.querySelector('main') || document.querySelector('#app') ||
+               document.querySelector('.app') || document.querySelector('#root');
+    if (main) main.style.visibility = '';
+  }
+
+  function checkHash() {
+    if (location.hash === '#banks') show();
+    else hide();
+  }
+
+  // Перехватываем hashchange в фазе перехвата (capture) — наш сработает РАНЬШЕ роутера Qarajat.
+  window.addEventListener('hashchange', function (e) {
     if (location.hash === '#banks') {
       e.stopImmediatePropagation();
-      e.preventDefault();
     }
-    handleHash();
-  }, true); // true = фаза перехвата
+    checkHash();
+  }, true);
 
-  // Также проверяем при загрузке
+  // Перехватываем клики по ссылкам с href="#banks"
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href="#banks"], a[href$="/#banks"]');
+    if (a) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (location.hash !== '#banks') location.hash = '#banks';
+      else show();
+      return false;
+    }
+  }, true);
+
+  // При загрузке — проверяем, может уже открыт #banks
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', handleHash);
+    document.addEventListener('DOMContentLoaded', checkHash);
   } else {
-    handleHash();
+    checkHash();
   }
 
-  // Экспорт для ручного вызова
-  window.QarajatBanks = { open: open, close: close, render: render };
+  window.QarajatBanks = { open: show, close: hide, render: render };
 })();
