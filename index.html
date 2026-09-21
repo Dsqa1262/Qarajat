@@ -1,37 +1,48 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head><meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Qarajat">
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon-v2.png">
-<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192-v2.png
-<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512-v2.png">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0A0E13">
+<meta name="theme-color" content="#0B1210">
 <title>Qarajat — Тиыннан теңге құралар</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0A0E13;--bg2:#0F141A;--surface:#141B24;--surface2:#1B242F;--surface3:#222D3A;
-  --line:#26313E;--text:#EDF2F7;--muted:#7C8DA0;--muted2:#57667A;
-  --accent:#00E29A;--blue:#4B9EFF;--violet:#B794F6;--red:#FF5B6E;--warn:#FFB547;
-  --grad-hero:linear-gradient(135deg,#00E29A 0%,#4B9EFF 100%);
-  --grad-violet:linear-gradient(135deg,#B794F6 0%,#4B9EFF 100%);
-  --grad-danger:linear-gradient(135deg,#FF5B6E 0%,#FF7EA8 100%);
-  --shadow:0 8px 24px rgba(0,0,0,.35);
-  --nav-h:72px;
+  --bg:#0B1210;
+  --bg2:#0E1614;
+  --surface:#141C19;
+  --surface2:#1A2420;
+  --surface3:#212E29;
+  --line:#1E2B26;
+  --line2:#26332E;
+  --text:#F0F5F3;
+  --text2:#C4D0CB;
+  --muted:#7A8C86;
+  --muted2:#566661;
+  --accent:#1ED760;
+  --accent-dim:#15A847;
+  --accent-soft:rgba(30,215,96,.12);
+  --gold:#E5C578;
+  --red:#FF5E6C;
+  --blue:#5BA8FF;
+  --violet:#B794F6;
+  --warn:#F5A623;
+  --grad-hero:linear-gradient(135deg,#1ED760 0%,#12B04A 100%);
+  --grad-gold:linear-gradient(135deg,#E5C578,#C9A04E);
+  --grad-violet:linear-gradient(135deg,#B794F6,#5BA8FF);
+  --grad-danger:linear-gradient(135deg,#FF5E6C,#FF8FA0);
+  --shadow:0 8px 32px rgba(0,0,0,.5);
+  --shadow-soft:0 2px 12px rgba(0,0,0,.25);
+  --nav-h:68px;
   color-scheme:dark;
 }
 [data-theme="light"]{
-  --bg:#F4F6FA;--bg2:#FFF;--surface:#FFF;--surface2:#F7F9FC;--surface3:#EDF1F7;
-  --line:#E3E8EF;--text:#0E1620;--muted:#697586;--muted2:#8A96A6;
-  --accent:#00B87A;--blue:#2E7DFF;--violet:#8B5CF6;--red:#E63946;--warn:#E8930C;
-  --shadow:0 8px 28px rgba(15,25,40,.08);
+  --bg:#F5F7F6;--bg2:#FFFFFF;--surface:#FFFFFF;--surface2:#F2F5F4;--surface3:#E7EDEA;
+  --line:#E2E9E6;--line2:#D4DCD8;--text:#0A1710;--text2:#33453D;--muted:#6B7A73;--muted2:#8D9A94;
+  --accent:#12A847;--accent-dim:#0E7C34;--accent-soft:rgba(18,168,71,.1);
+  --shadow:0 8px 24px rgba(15,30,20,.08);
   color-scheme:light;
 }
 html,body{height:100%}
@@ -40,342 +51,347 @@ body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
   font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased;
   overflow-x:hidden;transition:background .25s,color .25s;
+  letter-spacing:-.01em;
 }
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select,textarea{font-family:inherit;font-size:15px}
-h1,h2,h3,.num{font-family:'Manrope','Inter',sans-serif;font-weight:700;letter-spacing:-.02em}
-.num{font-variant-numeric:tabular-nums}
+h1,h2,h3,.num,.ttl{font-family:'Manrope','Inter',sans-serif;font-weight:800;letter-spacing:-.03em}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 
-/* ============== APP LAYOUT ============== */
-.app{
-  max-width:480px;margin:0 auto;min-height:100vh;
-  padding:0 0 calc(var(--nav-h) + 100px);
-  position:relative;
-}
-/* Резерв под последним элементом — чтобы ничего не пряталось за меню */
-#view::after{content:'';display:block;height:80px}
-
+.app{max-width:480px;margin:0 auto;min-height:100vh;padding:0 0 calc(var(--nav-h) + 90px);position:relative}
+#view::after{content:'';display:block;height:70px}
 @media(min-width:520px){
   body{background:var(--bg2)}
-  .app{box-shadow:0 0 0 1px var(--line);padding-bottom:calc(var(--nav-h) + 120px)}
+  .app{box-shadow:0 0 0 1px var(--line);padding-bottom:calc(var(--nav-h) + 110px)}
 }
 
-/* ============== TOPBAR ============== */
+/* ============ TOPBAR ============ */
 .topbar{
-  display:flex;align-items:center;gap:12px;padding:14px 18px 10px;
+  display:flex;align-items:center;gap:12px;padding:14px 16px 10px;
   position:sticky;top:0;z-index:40;
-  background:color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
-  border-bottom:1px solid transparent;
+  background:color-mix(in srgb, var(--bg) 90%, transparent);
+  backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);
+  border-bottom:1px solid transparent;transition:border-color .2s;
 }
-[data-theme="light"] .topbar{background:rgba(255,255,255,.8)}
+[data-theme="light"] .topbar{background:rgba(255,255,255,.85)}
 .topbar.scrolled{border-bottom-color:var(--line)}
 .avatar-btn{
-  width:42px;height:42px;border-radius:50%;
+  width:40px;height:40px;border-radius:50%;
   background:var(--grad-hero);color:#04140e;
-  display:grid;place-items:center;font-weight:800;font-size:17px;
-  font-family:'Manrope',sans-serif;flex:none;
-  overflow:hidden;position:relative;transition:.15s;
-  cursor:pointer;border:2px solid transparent;padding:0;
+  display:grid;place-items:center;font-weight:800;font-size:16px;
+  font-family:'Manrope',sans-serif;flex:none;overflow:hidden;position:relative;
+  transition:.15s;cursor:pointer;padding:0;letter-spacing:-.5px;
 }
-.avatar-btn:hover{border-color:var(--accent)}
+.avatar-btn:active{transform:scale(.94)}
 .avatar-btn img{width:100%;height:100%;object-fit:cover;display:block}
 .topbar .info{flex:1;min-width:0}
-.topbar .info small{color:var(--muted);font-size:11.5px;font-weight:500;display:block}
-.topbar .info b{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.topbar .info small{color:var(--muted);font-size:11.5px;font-weight:500;display:block;margin-bottom:1px}
+.topbar .info b{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;letter-spacing:-.02em}
 .icon-btn{
   width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
-  background:var(--surface);border:1px solid var(--line);color:var(--muted);font-size:16px;
-  transition:.15s;cursor:pointer;padding:0;
+  background:var(--surface);color:var(--text2);font-size:16px;
+  transition:.15s;cursor:pointer;padding:0;border:none;
 }
-.icon-btn:hover{color:var(--text)}
-.icon-btn:active{transform:scale(.94)}
+.icon-btn:active{transform:scale(.94);background:var(--surface2)}
 
-/* ============== HERO ============== */
-.hero{
-  margin:6px 16px 16px;padding:22px;border-radius:22px;
-  background:var(--grad-hero);color:#04140e;position:relative;overflow:hidden;
-  box-shadow:0 12px 36px rgba(0,226,154,.28);
+/* ============ HOME ============ */
+.home-wrap{padding:0 16px}
+
+.capital-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#0F4A2E 0%,#0A2A1C 55%,#0B1210 100%);
+  border-radius:24px;padding:24px 22px;margin:4px 0 14px;
+  border:1px solid rgba(30,215,96,.14);
+  box-shadow:0 16px 48px rgba(0,0,0,.4);
 }
-.hero::before{content:'';position:absolute;top:-40%;right:-20%;width:80%;height:180%;
-  background:radial-gradient(circle,rgba(255,255,255,.25),transparent 70%);pointer-events:none}
-.hero .lbl{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;opacity:.75}
-.hero .amount{font-size:38px;font-weight:800;letter-spacing:-1.2px;margin-top:6px;line-height:1.05}
-.hero .sub{font-size:12px;opacity:.75;margin-top:5px;font-weight:500}
-.hero .stats{display:flex;gap:20px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(4,20,14,.16)}
-.hero .stats > div{flex:1}
-.hero .stats small{font-size:11px;opacity:.72;font-weight:600;display:block}
-.hero .stats b{display:block;font-size:16px;font-weight:800;margin-top:2px;letter-spacing:-.3px}
-
-/* ============== SCROLLER ============== */
-.scroller{
-  display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
-  padding:4px 16px 20px;margin:0 -16px;scrollbar-width:none;
+.capital-card::before{
+  content:'';position:absolute;top:-50%;right:-30%;width:100%;height:200%;
+  background:radial-gradient(circle,rgba(30,215,96,.18),transparent 60%);
+  pointer-events:none;
 }
-.scroller::-webkit-scrollbar{display:none}
-.scroller > *{scroll-snap-align:start;flex:0 0 66%;}
-.scroller > *:last-child{margin-right:16px}
-.tile{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;min-height:104px}
-.tile .l{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700}
-.tile .v{font-size:22px;font-weight:800;margin-top:8px;letter-spacing:-.5px}
-.tile .s{font-size:11.5px;color:var(--muted);margin-top:4px}
-.tile.flex{display:flex;align-items:center;gap:14px}
+.capital-card .lbl{
+  font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
+  font-weight:700;color:rgba(255,255,255,.55);margin-bottom:8px;
+}
+.capital-card .amount{
+  font-size:38px;font-weight:800;letter-spacing:-1.5px;
+  margin-top:0;line-height:1;font-family:'Manrope',sans-serif;
+  color:#fff;
+}
+.capital-card .sub{font-size:12px;color:rgba(255,255,255,.55);margin-top:8px;font-weight:500}
+.capital-card .stats{
+  display:flex;gap:20px;margin-top:20px;padding-top:16px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.capital-card .stats>div{flex:1}
+.capital-card .stats small{font-size:10.5px;color:rgba(255,255,255,.5);font-weight:600;display:block;letter-spacing:.5px;text-transform:uppercase}
+.capital-card .stats b{
+  display:block;font-size:16px;font-weight:800;margin-top:3px;
+  letter-spacing:-.4px;font-family:'Manrope',sans-serif;color:#fff;
+}
 
-/* ============== RING ============== */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.quick-actions button{
+  padding:16px;border-radius:16px;font-weight:700;font-size:15px;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:.15s;cursor:pointer;border:none;letter-spacing:-.01em;
+}
+.quick-actions button:active{transform:scale(.97)}
+.qa-income{background:var(--accent);color:#04140e;box-shadow:0 8px 24px rgba(30,215,96,.25)}
+.qa-expense{background:var(--surface2);color:var(--text);border:1px solid var(--line2)!important}
+
+.hcard{
+  background:var(--surface);border:1px solid var(--line);border-radius:20px;
+  padding:18px;margin-bottom:12px;transition:.15s;
+}
+.hcard[data-nav],.hcard[data-act]{cursor:pointer}
+.hcard[data-nav]:active,.hcard[data-act]:active{transform:scale(.985);background:var(--surface2)}
+.hcard .hcard-l{
+  font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center;letter-spacing:-.01em;
+}
+.hcard .hcard-v{font-size:24px;font-weight:800;font-family:'Manrope',sans-serif;letter-spacing:-.6px}
+.hcard .hcard-s{font-size:12px;color:var(--muted);margin-top:4px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+
+/* ============ RING ============ */
 .ring{position:relative;flex:none}
 .ring svg{display:block;transform:rotate(-90deg)}
 .ring svg circle{transition:stroke-dashoffset .8s cubic-bezier(.2,.8,.3,1)}
-.ring .in{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-family:'Manrope',sans-serif}
+.ring .in{position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-family:'Manrope',sans-serif;letter-spacing:-.04em}
 
-/* ============== SECTIONS ============== */
+/* ============ SECTIONS ============ */
 .section{padding:0 16px;margin-bottom:22px}
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sh h2{font-size:16px;font-weight:800;letter-spacing:-.2px}
-.sh .link{font-size:13px;color:var(--accent);font-weight:600;cursor:pointer}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 2px}
+.sh h2{font-size:16px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+.sh .link{font-size:13px;color:var(--accent);font-weight:600;cursor:pointer;letter-spacing:-.01em}
 
-/* ============== CARD ============== */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:10px}
 
-/* ============== LIST ROWS ============== */
-.row{display:flex;align-items:center;gap:12px;padding:12px 14px;
-  background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:8px}
-.row[data-nav],.row[data-act]{cursor:pointer;transition:.15s}
-.row[data-nav]:active,.row[data-act]:active{transform:scale(.985)}
-.row .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
-  font-size:18px;background:var(--surface3);flex:none}
+/* ============ ROWS ============ */
+.row{
+  display:flex;align-items:center;gap:14px;padding:12px 14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;margin-bottom:8px;
+  transition:.15s;
+}
+.row[data-nav],.row[data-act]{cursor:pointer}
+.row[data-nav]:active,.row[data-act]:active{transform:scale(.985);background:var(--surface2)}
+.row .ic{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  background:var(--surface2);flex:none;color:var(--text2);
+}
 .row .b{flex:1;min-width:0}
-.row .b b{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .b small{font-size:12px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.row .amt{font-family:'Manrope',sans-serif;font-weight:700;font-size:14.5px;
-  white-space:nowrap;font-variant-numeric:tabular-nums}
+.row .b b{display:block;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.01em}
+.row .b small{font-size:12px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.row .amt{font-family:'Manrope',sans-serif;font-weight:700;font-size:15px;
+  white-space:nowrap;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .pos{color:var(--accent)}.neg{color:var(--red)}.warnc{color:var(--warn)}.violet{color:var(--violet)}
 
-/* ============== BUTTONS ============== */
+/* ============ BANK CHIP ============ */
+.bank-chip{
+  width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+  font-weight:800;font-size:15px;color:#fff;flex:none;font-family:'Manrope',sans-serif;
+  letter-spacing:-.5px;
+}
+
+/* ============ BUTTONS ============ */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:12px 18px;border-radius:14px;font-size:14px;font-weight:700;
-  background:var(--surface2);color:var(--text);border:1px solid var(--line);
-  transition:.15s;font-family:inherit}
+  padding:13px 18px;border-radius:14px;font-size:14px;font-weight:700;
+  background:var(--surface2);color:var(--text);border:1px solid var(--line2);
+  transition:.15s;font-family:inherit;letter-spacing:-.01em}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:var(--grad-hero);color:#04140e;border:none;
-  box-shadow:0 8px 20px rgba(0,226,154,.28)}
+.btn.primary{background:var(--accent);color:#04140e;border:none;
+  box-shadow:0 8px 20px rgba(30,215,96,.22)}
 .btn.danger{background:var(--grad-danger);color:#fff;border:none}
-.btn.ghost{background:transparent}
+.btn.ghost{background:transparent;border-color:var(--line2)}
 .btn.block{width:100%}
 .btn.sm{padding:9px 14px;font-size:13px;border-radius:12px}
 .btn.lg{padding:15px 22px;font-size:15px}
 
-/* ============== FORMS ============== */
+/* ============ FORMS ============ */
 .form{display:grid;gap:12px}
 .field{display:flex;flex-direction:column;gap:6px}
-.field > label{font-size:12px;color:var(--muted);font-weight:600}
+.field>label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.01em}
 .input,input,select,textarea{
-  background:var(--bg2);border:1px solid var(--line);color:var(--text);
-  border-radius:12px;padding:12px 14px;font-size:15px;width:100%;outline:none;
+  background:var(--bg2);border:1px solid var(--line2);color:var(--text);
+  border-radius:12px;padding:13px 14px;font-size:15px;width:100%;outline:none;
   transition:.15s;-webkit-appearance:none;appearance:none;
 }
-[data-theme="light"] .input,[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{
-  background:var(--surface2);
-}
+[data-theme="light"] .input,[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:var(--surface2)}
 .input:focus,input:focus,select:focus,textarea:focus{
-  border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,226,154,.15);
+  border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);
 }
 .r2{display:grid;gap:11px;grid-template-columns:1fr 1fr}
 
-/* ============================================================
-   ФИКС ЧЕКБОКСОВ — отдельный стиль
-   ============================================================ */
-input[type="checkbox"],
-input[type="radio"]{
-  -webkit-appearance:auto !important;
-  appearance:auto !important;
-  width:22px !important;
-  height:22px !important;
-  min-width:22px;
-  max-width:22px;
-  padding:0 !important;
-  margin:0;
-  border:1.5px solid var(--line) !important;
-  border-radius:6px !important;
-  background:var(--surface2) !important;
-  box-shadow:none !important;
-  cursor:pointer;
-  flex:none;
-  accent-color:var(--accent);
-  transition:border-color .15s, background .15s, transform .1s;
+input[type="checkbox"],input[type="radio"]{
+  -webkit-appearance:auto !important;appearance:auto !important;
+  width:22px !important;height:22px !important;min-width:22px;max-width:22px;
+  padding:0 !important;margin:0;
+  border:1.5px solid var(--line2) !important;border-radius:6px !important;
+  background:var(--surface2) !important;box-shadow:none !important;
+  cursor:pointer;flex:none;accent-color:var(--accent);
 }
 input[type="radio"]{border-radius:50% !important}
-input[type="checkbox"]:hover,
-input[type="radio"]:hover{border-color:var(--accent) !important}
-input[type="checkbox"]:checked,
-input[type="radio"]:checked{
-  background:var(--accent) !important;
-  border-color:var(--accent) !important;
-}
-input[type="checkbox"]:active,
-input[type="radio"]:active{transform:scale(.92)}
-input[type="checkbox"]:focus-visible,
-input[type="radio"]:focus-visible{
-  outline:2px solid var(--accent);
-  outline-offset:2px;
-}
+input[type="checkbox"]:checked,input[type="radio"]:checked{background:var(--accent) !important;border-color:var(--accent) !important}
 
-/* Строки с чекбоксами */
-.notif-row{
-  display:flex;align-items:center;gap:12px;padding:12px 4px;
-  border-bottom:1px solid var(--line);cursor:pointer;
-  transition:background .15s;
-}
+.notif-row{display:flex;align-items:center;gap:12px;padding:13px 4px;
+  border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
 .notif-row:last-child{border-bottom:none}
-.notif-row:hover{background:var(--surface2)}
 .notif-row span{font-size:14px;font-weight:500;user-select:none;flex:1}
 
-/* ============== SEG ============== */
+/* ============ SEG ============ */
 .seg{display:flex;gap:6px;padding:4px;background:var(--surface2);
   border-radius:14px;border:1px solid var(--line);overflow-x:auto}
-.seg button{flex:1;min-width:80px;padding:9px 12px;border-radius:10px;
+.seg button{flex:1;min-width:80px;padding:10px 12px;border-radius:10px;
   font-size:13px;font-weight:600;color:var(--muted);transition:.18s;white-space:nowrap;
   font-family:inherit;cursor:pointer}
-.seg button.on{background:var(--text);color:var(--bg)}
+.seg button.on{background:var(--accent);color:#04140e}
 
-/* ============== TAGS ============== */
+/* ============ TAGS ============ */
 .tag{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;
   font-size:10.5px;font-weight:700;background:var(--surface3);color:var(--muted)}
-.tag.g{background:rgba(0,226,154,.14);color:var(--accent)}
-.tag.r{background:rgba(255,91,110,.14);color:var(--red)}
-.tag.y{background:rgba(255,181,71,.14);color:var(--warn)}
-.tag.b{background:rgba(75,158,255,.14);color:var(--blue)}
+.tag.g{background:var(--accent-soft);color:var(--accent)}
+.tag.r{background:rgba(255,94,108,.14);color:var(--red)}
+.tag.y{background:rgba(245,166,35,.14);color:var(--warn)}
+.tag.b{background:rgba(91,168,255,.14);color:var(--blue)}
 .tag.v{background:rgba(183,148,246,.14);color:var(--violet)}
 
-/* ============== BOTTOM NAV ============== */
+/* ============ BOTTOM NAV ============ */
 .bottomnav{
   position:fixed;bottom:0;left:0;right:0;z-index:60;
   max-width:480px;margin:0 auto;
-  background:color-mix(in srgb, var(--bg) 85%, transparent);
-  backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);
+  background:color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter:saturate(180%) blur(28px);-webkit-backdrop-filter:saturate(180%) blur(28px);
   border-top:1px solid var(--line);
-  display:grid;grid-template-columns:1fr 1fr 74px 1fr 1fr;
+  display:grid;grid-template-columns:1fr 1fr 68px 1fr 1fr;
   align-items:end;
-  padding:8px 4px max(12px, env(safe-area-inset-bottom));
+  padding:8px 4px max(10px, env(safe-area-inset-bottom));
   height:var(--nav-h);
 }
-[data-theme="light"] .bottomnav{background:rgba(255,255,255,.85)}
-.bottomnav button{display:flex;flex-direction:column;align-items:center;gap:2px;
-  color:var(--muted);font-size:10.5px;font-weight:600;padding:6px 2px;
-  transition:.15s;position:relative;cursor:pointer;font-family:inherit}
-.bottomnav button .bi{font-size:22px;line-height:1;transition:.2s}
+[data-theme="light"] .bottomnav{background:rgba(255,255,255,.92)}
+.bottomnav button{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--muted);font-size:10px;font-weight:600;
+  padding:8px 2px;transition:.15s;position:relative;cursor:pointer;
+  font-family:inherit;letter-spacing:-.01em;
+}
+.bottomnav button .bi{display:grid;place-items:center;transition:transform .2s}
 .bottomnav button.on{color:var(--accent)}
-.bottomnav .add-btn{width:60px;height:60px;border-radius:50%;
-  background:var(--grad-hero);color:#04140e;display:grid;place-items:center;
-  font-size:28px;font-weight:800;box-shadow:0 10px 26px rgba(0,226,154,.4);
-  align-self:center;transition:.15s;border:none;cursor:pointer}
-.bottomnav .add-btn:active{transform:scale(.92)}
-.bottomnav .badge{position:absolute;top:0;right:24%;background:var(--red);color:#fff;
+.bottomnav button.on .bi{transform:translateY(-1px)}
+.bottomnav .add-btn{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--accent);color:#04140e;display:grid;place-items:center;
+  box-shadow:0 8px 24px rgba(30,215,96,.4);
+  align-self:center;transition:.15s;border:none;cursor:pointer;
+  padding:0;
+}
+.bottomnav .add-btn:active{transform:scale(.9)}
+.bottomnav .badge{position:absolute;top:2px;right:calc(50% - 20px);background:var(--red);color:#fff;
   font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;line-height:1.3}
 
-/* ============== FAB AI ============== */
+/* ============ FAB AI ============ */
 .fab-ai{
-  position:fixed;right:calc(50% - 240px + 16px);bottom:calc(var(--nav-h) + 16px);z-index:65;
-  width:56px;height:56px;border-radius:50%;
-  background:var(--grad-violet);color:#fff;font-size:24px;display:grid;place-items:center;
-  box-shadow:0 12px 32px rgba(183,148,246,.5);transition:.2s;border:none;cursor:pointer;
-  animation:pulse 2.6s infinite;
+  position:fixed;right:calc(50% - 240px + 16px);bottom:calc(var(--nav-h) + 14px);z-index:65;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--grad-violet);color:#fff;font-size:22px;display:grid;place-items:center;
+  box-shadow:0 12px 32px rgba(183,148,246,.45);transition:.2s;border:none;cursor:pointer;
+  animation:pulse 3s infinite;
 }
 @media(max-width:512px){.fab-ai{right:16px}}
-.fab-ai:active{transform:scale(.92)}
+.fab-ai:active{transform:scale(.9)}
 @keyframes pulse{
-  0%,100%{box-shadow:0 12px 32px rgba(183,148,246,.4),0 0 0 0 rgba(183,148,246,.5)}
-  50%{box-shadow:0 12px 32px rgba(183,148,246,.5),0 0 0 12px rgba(183,148,246,0)}
+  0%,100%{box-shadow:0 12px 32px rgba(183,148,246,.4),0 0 0 0 rgba(183,148,246,.4)}
+  50%{box-shadow:0 12px 32px rgba(183,148,246,.5),0 0 0 10px rgba(183,148,246,0)}
 }
-.fab-ai .dot{position:absolute;top:4px;right:4px;width:12px;height:12px;border-radius:50%;
+.fab-ai .dot{position:absolute;top:3px;right:3px;width:11px;height:11px;border-radius:50%;
   background:var(--accent);border:2px solid var(--bg)}
 
-/* ============== SHEET ============== */
-.backdrop{position:fixed;inset:0;z-index:150;background:rgba(4,8,12,.55);
-  backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:.25s}
+/* ============ SHEET ============ */
+.backdrop{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:.25s}
 .backdrop.open{opacity:1;pointer-events:auto}
 .sheet{
   position:fixed;left:0;right:0;bottom:0;z-index:160;max-width:480px;margin:0 auto;
   background:var(--bg);border-top:1px solid var(--line);
   border-radius:24px 24px 0 0;max-height:88vh;overflow-y:auto;
   padding:8px 18px calc(24px + env(safe-area-inset-bottom));
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);
-  box-shadow:0 -12px 40px rgba(0,0,0,.3);
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);
+  box-shadow:0 -12px 48px rgba(0,0,0,.5);
 }
 .sheet.open{transform:translateY(0)}
-.sheet .handle{width:40px;height:4px;border-radius:99px;background:var(--line);margin:8px auto 16px}
-.sheet h3{font-size:18px;margin-bottom:14px;letter-spacing:-.2px}
-.sheet-actions{display:flex;gap:10px;margin-top:18px}
+.sheet .handle{width:40px;height:4px;border-radius:99px;background:var(--line2);margin:8px auto 18px}
+.sheet h3{font-size:19px;margin-bottom:16px;letter-spacing:-.03em;font-weight:800}
+.sheet-actions{display:flex;gap:10px;margin-top:20px}
 .sheet-actions .btn{flex:1}
 
-/* ============== AI CHAT ============== */
+/* ============ AI CHAT ============ */
 .ai-sheet{position:fixed;inset:0;z-index:200;max-width:480px;margin:0 auto;
   background:var(--bg);display:flex;flex-direction:column;
-  transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1)}
 .ai-sheet.open{transform:translateY(0)}
 .ai-head{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--line)}
 .ai-head .ava{width:44px;height:44px;border-radius:14px;background:var(--grad-violet);
-  display:grid;place-items:center;font-size:22px;flex:none}
+  display:grid;place-items:center;font-size:20px;flex:none}
 .ai-head .meta{flex:1;min-width:0}
-.ai-head .meta b{display:block;font-size:15px;font-weight:800}
+.ai-head .meta b{display:block;font-size:15px;font-weight:800;letter-spacing:-.02em}
 .ai-head .meta small{font-size:11.5px;color:var(--muted)}
 .ai-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.ai-msg{max-width:86%;padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.5;
+.ai-msg{max-width:86%;padding:12px 15px;border-radius:18px;font-size:14px;line-height:1.5;
   word-wrap:break-word;animation:in .25s ease}
 @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.ai-msg.user{align-self:flex-end;background:var(--grad-hero);color:#04140e;
+.ai-msg.user{align-self:flex-end;background:var(--accent);color:#04140e;
   border-bottom-right-radius:6px;font-weight:500}
 .ai-msg.bot{align-self:flex-start;background:var(--surface);
-  border:1px solid var(--line);border-bottom-left-radius:6px}
-.ai-msg.bot b{color:var(--violet)}
-.ai-msg .src{display:block;font-size:10.5px;color:var(--muted2);margin-top:6px;
-  padding-top:6px;border-top:1px dashed var(--line)}
-.ai-sugg{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 8px}
-.ai-sugg button{padding:7px 13px;border-radius:99px;font-size:12px;font-weight:600;
-  background:var(--surface);border:1px solid var(--line);color:var(--muted);cursor:pointer;
-  font-family:inherit}
+  border:1px solid var(--line);border-bottom-left-radius:6px;color:var(--text)}
+.ai-msg.bot b{color:var(--violet);font-weight:700}
+.ai-msg .src{display:block;font-size:10.5px;color:var(--muted2);margin-top:8px;
+  padding-top:8px;border-top:1px dashed var(--line)}
+.ai-sugg{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 10px}
+.ai-sugg button{padding:8px 14px;border-radius:99px;font-size:12px;font-weight:600;
+  background:var(--surface);border:1px solid var(--line2);color:var(--text2);cursor:pointer;
+  font-family:inherit;transition:.15s}
+.ai-sugg button:active{background:var(--surface2)}
 .ai-input-row{display:flex;gap:8px;align-items:flex-end;
   padding:12px 16px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
-.ai-input-row textarea{background:var(--surface);border:1px solid var(--line);
-  border-radius:18px;padding:11px 14px;resize:none;min-height:44px;max-height:110px}
-.ai-input-row .send{width:44px;height:44px;border-radius:50%;flex:none;
-  background:var(--grad-hero);color:#04140e;font-size:18px;font-weight:800;
-  display:grid;place-items:center;border:none;cursor:pointer}
-.ai-input-row .send:active{transform:scale(.92)}
+.ai-input-row textarea{background:var(--surface);border:1px solid var(--line2);
+  border-radius:20px;padding:12px 16px;resize:none;min-height:46px;max-height:110px}
+.ai-input-row .send{width:46px;height:46px;border-radius:50%;flex:none;
+  background:var(--accent);color:#04140e;font-size:18px;font-weight:800;
+  display:grid;place-items:center;border:none;cursor:pointer;transition:.15s}
+.ai-input-row .send:active{transform:scale(.9)}
 
-/* ============== TOAST ============== */
-.toast-wrap{position:fixed;top:70px;left:50%;transform:translateX(-50%);
-  z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{
-  padding:11px 18px;border-radius:14px;font-size:13.5px;font-weight:600;
-  background:var(--surface);border:1px solid var(--line);color:var(--text);
-  box-shadow:var(--shadow);animation:toastIn .3s ease;
-  max-width:340px;text-align:center;
-}
-.toast.g{border-color:rgba(0,226,154,.4);background:rgba(0,226,154,.1);color:var(--accent)}
-.toast.r{border-color:rgba(255,91,110,.4);background:rgba(255,91,110,.1);color:var(--red)}
-.toast.y{border-color:rgba(255,181,71,.4);background:rgba(255,181,71,.1);color:var(--warn)}
+/* ============ TOAST ============ */
+.toast-wrap{position:fixed;top:74px;left:50%;transform:translateX(-50%);
+  z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none;
+  max-width:calc(100% - 32px)}
+.toast{padding:12px 18px;border-radius:14px;font-size:13.5px;font-weight:600;
+  background:var(--surface);border:1px solid var(--line2);color:var(--text);
+  box-shadow:var(--shadow);animation:toastIn .3s ease;text-align:center;
+  backdrop-filter:blur(12px);letter-spacing:-.01em}
+.toast.g{border-color:rgba(30,215,96,.4);background:rgba(30,215,96,.14);color:var(--accent)}
+.toast.r{border-color:rgba(255,94,108,.4);background:rgba(255,94,108,.14);color:var(--red)}
+.toast.y{border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.14);color:var(--warn)}
 @keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
 
-/* ============== MISC ============== */
-.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:36px 20px;line-height:1.6}
-.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.pill{padding:7px 13px;border-radius:99px;font-size:12.5px;font-weight:600;
-  background:var(--surface);border:1px solid var(--line);color:var(--muted);
-  cursor:pointer;font-family:inherit;transition:.15s}
+/* ============ MISC ============ */
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:40px 20px;line-height:1.6}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.pill{padding:8px 14px;border-radius:99px;font-size:12.5px;font-weight:600;
+  background:var(--surface);border:1px solid var(--line2);color:var(--muted);
+  cursor:pointer;font-family:inherit;transition:.15s;letter-spacing:-.01em}
 .pill.on{background:var(--text);color:var(--bg);border-color:transparent}
 
-/* ============== CALENDAR ============== */
+/* ============ CALENDAR ============ */
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px;
   text-align:center;font-size:10.5px;color:var(--muted);font-weight:700}
-.cal-day{
-  aspect-ratio:1;border-radius:11px;background:var(--surface2);
+.cal-day{aspect-ratio:1;border-radius:12px;background:var(--surface2);
   padding:5px 4px;font-size:12px;display:flex;flex-direction:column;
   align-items:center;justify-content:flex-start;cursor:pointer;
-  transition:.15s;border:1px solid transparent;position:relative;
-}
-.cal-day:hover{background:var(--surface3)}
-.cal-day.today{background:rgba(0,226,154,.16);border-color:rgba(0,226,154,.5)}
+  transition:.15s;border:1px solid transparent;position:relative}
+.cal-day:active{background:var(--surface3)}
+.cal-day.today{background:var(--accent-soft);border-color:rgba(30,215,96,.4)}
 .cal-day.today b{color:var(--accent)}
 .cal-day.sel{background:var(--accent);border-color:transparent}
 .cal-day.sel b{color:#04140e}
@@ -387,25 +403,19 @@ input[type="radio"]:focus-visible{
 .cal-day .dot.r{background:var(--violet)}
 .cal-day .dot.o{background:var(--blue)}
 
-/* ============== PROFILE AVATAR ============== */
-.profile-av{
-  width:100px;height:100px;border-radius:50%;
-  background:var(--grad-violet);color:#fff;
-  display:grid;place-items:center;font-size:40px;font-weight:800;
+.profile-av{width:96px;height:96px;border-radius:50%;
+  background:var(--grad-hero);color:#04140e;
+  display:grid;place-items:center;font-size:38px;font-weight:800;
   font-family:'Manrope',sans-serif;position:relative;overflow:hidden;
-  margin:0 auto;border:3px solid var(--line);
-}
+  margin:0 auto;border:3px solid var(--surface);letter-spacing:-.04em}
 .profile-av img{width:100%;height:100%;object-fit:cover;display:block}
 .profile-av .edit-badge{
-  position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;
-  background:var(--grad-hero);color:#04140e;font-size:14px;
+  position:absolute;bottom:0;right:0;width:30px;height:30px;border-radius:50%;
+  background:var(--surface);color:var(--text);font-size:13px;
   display:grid;place-items:center;border:3px solid var(--bg);cursor:pointer;
 }
-
-/* ============== DANGER ZONE ============== */
-.danger-zone{padding-bottom:20px}
+.danger-zone{padding-bottom:18px}
 </style>
-  <meta name="theme-color" content="#0f172a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Qarajat">
@@ -415,17 +425,10 @@ input[type="radio"]:focus-visible{
 <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
 </head>
 <body>
-  <button id="qarajat-install-btn" type="button" style="
-  display: none; position: fixed; right: 16px; bottom: 16px; z-index: 9999;
-  padding: 12px 18px; border: none; border-radius: 12px;
-  background: #0f172a; color: #fff; font-size: 14px; font-weight: 600;
-  cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.3);">
-  ⬇ Скачать приложение
-</button>
 <div class="app">
   <header class="topbar" id="topbar"></header>
   <main id="view"></main>
-  <button class="fab-ai" id="aiFab" title="Алдар-Косе">💬<span class="dot"></span></button>
+  <button class="fab-ai" id="aiFab" title="Алдар-Косе">✦<span class="dot"></span></button>
   <nav class="bottomnav" id="nav"></nav>
 </div>
 
@@ -438,7 +441,7 @@ input[type="radio"]:focus-visible{
 
 <div class="ai-sheet" id="aiSheet">
   <div class="ai-head">
-    <div class="ava">🧠</div>
+    <div class="ava">✦</div>
     <div class="meta"><b>Алдар-Косе</b><small>AI-помощник · только чтение</small></div>
     <button class="icon-btn" id="aiClose" type="button">✕</button>
   </div>
@@ -446,16 +449,58 @@ input[type="radio"]:focus-visible{
   <div class="ai-sugg" id="aiSugg"></div>
   <div class="ai-input-row">
     <textarea id="aiInput" placeholder="Спроси что-нибудь…" rows="1"></textarea>
-    <button class="send" id="aiSend" type="button">➤</button>
+    <button class="send" id="aiSend" type="button">↑</button>
   </div>
 </div>
 
 <input type="file" id="avatarInput" accept="image/jpeg,image/jpg,image/png,image/webp" hidden>
 <div class="toast-wrap" id="toastWrap"></div>
 
+<button id="qarajat-install-btn" type="button" style="
+  display: none; position: fixed; right: 16px; bottom: 84px; z-index: 9999;
+  padding: 12px 18px; border: none; border-radius: 14px;
+  background: var(--accent, #1ED760); color: #04140e; font-size: 14px; font-weight: 700;
+  cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,.4); font-family: inherit;">
+  ⬇ Установить Qarajat
+</button>
+
 <script>
 (function(){
 'use strict';
+
+/* ============================================================
+   SVG ИКОНКИ (единый контурный стиль)
+   ============================================================ */
+const SICONS = {
+  home:       '<path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M3 10.5h18"/><path d="M9 21v-6h6v6"/><path d="M5.5 14.5h3v3h-3z"/><path d="M15.5 14.5h3v3h-3z"/>',
+  history:    '<path d="M3 5h7a3 3 0 0 1 3 3v13a3 3 0 0 0-3-3H3z"/><path d="M21 5h-7a3 3 0 0 0-3 3v13a3 3 0 0 1 3-3h7z"/><path d="M7 9h3M7 13h3M7 17h3"/><path d="M15 8c2 1 4 3 4 5"/>',
+  plus:       '<path d="M12 5v14M5 12h14"/>',
+  calendar:   '<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M12 3v4M16 3v4"/><path d="M3 10h18"/><circle cx="8" cy="14.5" r="1"/><circle cx="12" cy="14.5" r="1"/><circle cx="16" cy="14.5" r="1"/><circle cx="8" cy="18" r="1"/><circle cx="12" cy="18" r="1"/><circle cx="16" cy="18" r="1"/>',
+  more:       '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+  analytics:  '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>',
+  bank:       '<path d="M3 10 12 4l9 6"/><path d="M5 10v10h14V10"/><path d="M9 20v-6M15 20v-6"/><path d="M3 20h18"/>',
+  debt:       '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1.2"/>',
+  target:     '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  trending:   '<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
+  tag:        '<path d="M20.59 13.41 12 22 2 12V2h10z"/><circle cx="7" cy="7" r="1.5"/>',
+  bell:       '<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  user:       '<circle cx="12" cy="8" r="4"/><path d="M4 22c0-4 4-7 8-7s8 3 8 7"/>',
+  up:         '<path d="M12 5v14M5 12l7-7 7 7"/>',
+  down:       '<path d="M12 19V5M5 12l7 7 7-7"/>',
+  wallet:     '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="17" cy="14.5" r="1.2"/>',
+  piggy:      '<path d="M12 3v3"/><path d="M5 10a7 7 0 0 1 14 0v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><circle cx="16" cy="11" r=".8"/>',
+  check:      '<path d="M5 13l4 4L19 7"/>',
+  trash:      '<path d="M3 6h18"/><path d="M8 6V3h8v3"/><path d="M6 6l1 15h10l1-15"/>',
+  edit:       '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  arrow:      '<path d="M9 6l6 6-6 6"/>',
+  close:      '<path d="M6 6l12 12M18 6L6 18"/>'
+};
+function SI(name,size,sw){
+  const s=size||22;
+  const w=sw||2;
+  const p=SICONS[name]||'';
+  return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+w+'" stroke-linecap="round" stroke-linejoin="round" style="display:block;flex:none">'+p+'</svg>';
+}
 
 /* ============================================================
    УТИЛИТЫ
@@ -472,10 +517,8 @@ const moneyShort=n=>{const a=Math.abs(n);
   return Math.round(n)+''};
 const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const MONTHS_FULL=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const todayISO=()=>{
-  const d=new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-};
+const todayISO=()=>{const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const dShift=d=>{const x=new Date();x.setDate(x.getDate()+d);return x.toISOString().slice(0,10)};
 const parseD=s=>{if(!s)return new Date();const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const fmtDate=s=>{if(!s)return '—';const d=parseD(s);
@@ -495,6 +538,72 @@ function parseAmount(raw){
   if(lD>-1&&lC>-1){if(lD>lC)s=s.replace(/,/g,'');else s=s.replace(/\./g,'').replace(',','.')}
   else if(lC>-1){s=s.replace(',','.')}
   const n=parseFloat(s);return isNaN(n)?NaN:n;
+}
+
+/* ============================================================
+   БАНКИ КАЗАХСТАНА
+   ============================================================ */
+const KZ_BANKS=[
+  {id:'kaspi',      name:'Kaspi Bank',        color:'#e4002b', short:'K'},
+  {id:'halyk',      name:'Halyk Bank',        color:'#00693e', short:'H'},
+  {id:'forte',      name:'ForteBank',         color:'#0055a5', short:'F'},
+  {id:'jusan',      name:'Jusan Bank',        color:'#00a0df', short:'J'},
+  {id:'freedom',    name:'Freedom Bank',      color:'#ff5c00', short:'F'},
+  {id:'bcc',        name:'Bank CenterCredit', color:'#f5a800', short:'C'},
+  {id:'bereke',     name:'Bereke Bank',       color:'#00a651', short:'B'},
+  {id:'homecredit', name:'Home Credit Bank',  color:'#ff6b00', short:'H'},
+  {id:'altyn',      name:'Altyn Bank',        color:'#b78e2f', short:'A'},
+  {id:'rbk',        name:'RBK Bank',          color:'#1a3c8c', short:'R'},
+  {id:'nurbank',    name:'Nurbank',           color:'#00448c', short:'N'},
+  {id:'eurasian',   name:'Eurasian Bank',     color:'#e30613', short:'E'},
+  {id:'vtb',        name:'VTB Kazakhstan',    color:'#0033a0', short:'V'},
+  {id:'citi',       name:'Citibank KZ',       color:'#0a5c9c', short:'C'},
+  {id:'bock',       name:'Bank of China KZ',  color:'#8b0000', short:'B'},
+  {id:'alhilal',    name:'Al Hilal Bank',     color:'#0b6b3a', short:'A'},
+  {id:'capital',    name:'Capital Bank',      color:'#1a3d7c', short:'C'},
+  {id:'kzi',        name:'KZI Bank',          color:'#2c5aa0', short:'K'},
+  {id:'shinhan',    name:'Shinhan Bank KZ',   color:'#0046ff', short:'S'},
+  {id:'other',      name:'Другой банк',       color:'#7A8C86', short:'?'}
+];
+const ACC_TYPES={
+  card:        {label:'Банковская карта', group:'own'},
+  current:     {label:'Текущий счёт',     group:'own'},
+  deposit:     {label:'Депозит',          group:'deposit'},
+  credit:      {label:'Кредит',           group:'debt'},
+  installment: {label:'Рассрочка',        group:'debt'}
+};
+const CURRENCIES=['KZT','USD','EUR','RUB'];
+
+function bankInfo(id){return KZ_BANKS.find(b=>b.id===id)||KZ_BANKS[KZ_BANKS.length-1]}
+function guessBankId(name){
+  if(!name)return 'other';
+  const n=name.toLowerCase();
+  if(n.includes('kaspi')||n.includes('каспи'))return 'kaspi';
+  if(n.includes('halyk')||n.includes('халык'))return 'halyk';
+  if(n.includes('forte'))return 'forte';
+  if(n.includes('jusan')||n.includes('жусан'))return 'jusan';
+  if(n.includes('freedom'))return 'freedom';
+  if(n.includes('bcc')||n.includes('centercredit'))return 'bcc';
+  if(n.includes('bereke')||n.includes('береке'))return 'bereke';
+  if(n.includes('home credit')||n.includes('homecredit'))return 'homecredit';
+  if(n.includes('altyn')||n.includes('алтын'))return 'altyn';
+  if(n.includes('rbk'))return 'rbk';
+  if(n.includes('nurbank')||n.includes('нурбанк'))return 'nurbank';
+  if(n.includes('eurasian')||n.includes('евразий'))return 'eurasian';
+  if(n.includes('vtb')||n.includes('втб'))return 'vtb';
+  return 'other';
+}
+function guessType(kind){
+  if(kind==='savings')return 'deposit';
+  if(kind==='investment')return 'current';
+  return 'card';
+}
+function ensureAccountFields(a){
+  if(!a.bankId)a.bankId=guessBankId(a.name);
+  if(!a.type)a.type=guessType(a.kind);
+  if(!a.currency)a.currency='KZT';
+  if(!a.status)a.status='active';
+  if(!a.createdAt)a.createdAt=todayISO();
 }
 
 /* ============================================================
@@ -537,18 +646,12 @@ function catOptions(type,selected){
   const subs=cats.filter(c=>c.parent);
   let html='';
   roots.forEach(r=>{
-    html+=`<option value="${esc(r.name)}" ${r.name===selected?'selected':''}>${r.icon} ${esc(r.name)}</option>`;
+    html+=`<option value="${esc(r.name)}" ${r.name===selected?'selected':''}>${esc(r.name)}</option>`;
     subs.filter(s=>s.parent===r.id).forEach(s=>{
-      html+=`<option value="${esc(s.name)}" ${s.name===selected?'selected':''}>— ${s.icon} ${esc(s.name)}</option>`;
+      html+=`<option value="${esc(s.name)}" ${s.name===selected?'selected':''}>— ${esc(s.name)}</option>`;
     });
   });
   return html;
-}
-function iconFor(name,type){
-  const all=[...(state.categories.income||[]),...(state.categories.expense||[])];
-  const c=all.find(x=>x.name===name);
-  if(c)return c.icon;
-  return type==='income'?'💰':'💸';
 }
 
 /* ============================================================
@@ -570,11 +673,11 @@ function seed(){
     ui:{tab:'dashboard',aiChat:[],filters:{type:'',category:'',from:'',to:'',search:''}},
     categories:defaultCategories(),
     accounts:[
-      {id:'a1',name:'Kaspi Gold',kind:'available',initial:320000},
-      {id:'a2',name:'Halyk',kind:'available',initial:150000},
-      {id:'a3',name:'Наличные',kind:'available',initial:72000},
-      {id:'a4',name:'Накопительный',kind:'savings',initial:1500000},
-      {id:'a5',name:'Инвестиции',kind:'investment',initial:1400000}
+      {id:'a1',name:'Kaspi Gold',kind:'available',initial:320000,bankId:'kaspi',type:'card',currency:'KZT',status:'active'},
+      {id:'a2',name:'Halyk',kind:'available',initial:150000,bankId:'halyk',type:'card',currency:'KZT',status:'active'},
+      {id:'a3',name:'Наличные',kind:'available',initial:72000,bankId:'other',type:'current',currency:'KZT',status:'active'},
+      {id:'a4',name:'Накопительный',kind:'savings',initial:1500000,bankId:'halyk',type:'deposit',currency:'KZT',status:'active'},
+      {id:'a5',name:'Инвестиции',kind:'investment',initial:1400000,bankId:'freedom',type:'current',currency:'KZT',status:'active'}
     ],
     operations:[
       {id:uid(),type:'income',amount:450000,date:dShift(-14),accountId:'a1',category:'Зарплата',comment:'',status:'done',createdAt:Date.now()},
@@ -633,6 +736,7 @@ state.history=state.history||[];
 state.scoreHistory=state.scoreHistory||[];
 state.notifications=state.notifications||[];
 state.debts.forEach(d=>{d.payments=d.payments||[];d.status=d.status||(d.balance<=0?'closed':'active')});
+state.accounts.forEach(ensureAccountFields);
 
 /* ============================================================
    РАСЧЁТЫ
@@ -697,7 +801,6 @@ function debtMonths(d){
   return Math.ceil(-Math.log(1-d.balance*r/d.minPayment)/Math.log(1+r));
 }
 const debtInterest=d=>d.balance*((d.rate||0)/100/12);
-const debtBody=d=>Math.max(0,Math.min(d.minPayment,d.balance)-debtInterest(d));
 const debtProgress=d=>d.initial<=0?0:clamp((1-d.balance/d.initial)*100,0,100);
 function advanceRecurring(date,interval,dayOfMonth){
   const d=new Date(date);
@@ -848,17 +951,17 @@ $('#backdrop').onclick=()=>closeSheet();
    NAV
    ============================================================ */
 const NAV_ITEMS=[
-{id:'dashboard',name:'Главная',icon:'🏠'},
-{id:'operations',name:'История',icon:'📋'},
-{id:'__add',name:'',icon:''},
-{id:'calendar',name:'Календарь',icon:'📅'},
-{id:'more',name:'Ещё',icon:'...'}
+  {id:'dashboard',name:'Главная',icon:SI('home',22)},
+  {id:'operations',name:'История',icon:SI('history',22)},
+  {id:'__add',name:'',icon:''},
+  {id:'calendar',name:'Календарь',icon:SI('calendar',22)},
+  {id:'more',name:'Ещё',icon:SI('more',22)}
 ];
 const TITLES={
-  banks:'Банки', dashboard:'', ai:'Алдар-Косе', analytics:'Аналитика', operations:'История',
-  categories:'Категории', calendar:'Календарь', accounts:'Счета', debts:'Долги',
+  dashboard:'', ai:'Алдар-Косе', analytics:'Аналитика', operations:'История',
+  categories:'Категории', calendar:'Календарь', accounts:'Банки', debts:'Долги',
   goals:'Цели', capital:'Капитал', notifications:'Уведомления',
-  profile:'Профиль', more:'Ещё'
+  profile:'Профиль', more:'Ещё', enpf:'ЕНПФ'
 };
 function go(tab,fromHistory){
   if(!fromHistory){
@@ -889,12 +992,12 @@ function renderTopbar(){
     ?`<img src="${p.avatar}" alt="">`
     :esc((p.name||'?').slice(0,1).toUpperCase());
   $('#topbar').innerHTML=`
-    <button class="avatar-btn" data-act="open-avatar" title="Изменить аватар">${avatarHtml}</button>
+    <button class="avatar-btn" data-act="open-avatar" title="Профиль">${avatarHtml}</button>
     <div class="info">
       <small>${esc(subtitle)}</small>
       <b>${esc(title)}</b>
     </div>
-    <button class="icon-btn" data-act="toggle-theme" title="Тема">${state.theme==='dark'?'☀️':'🌙'}</button>
+    <button class="icon-btn" data-act="toggle-theme" title="Тема">${state.theme==='dark'?'☀':'☾'}</button>
   `;
 }
 
@@ -904,7 +1007,7 @@ function renderTopbar(){
 function renderNav(){
   const unread=state.notifications.filter(n=>!n.read).length;
   $('#nav').innerHTML=NAV_ITEMS.map(n=>{
-    if(n.id==='__add')return `<button class="add-btn" data-act="quick-add" title="Добавить (Insert)" type="button">＋</button>`;
+    if(n.id==='__add')return `<button class="add-btn" data-act="quick-add" title="Добавить" type="button">${SI('plus',28,2.5)}</button>`;
     const active=state.ui.tab===n.id?'on':'';
     const badge=(n.id==='notifications'&&unread)?`<span class="badge">${unread}</span>`:'';
     return `<button data-nav="${n.id}" class="${active}" type="button">
@@ -914,7 +1017,7 @@ function renderNav(){
 }
 
 /* ============================================================
-   RING SVG
+   RING
    ============================================================ */
 function ringSVG(pct,size,stroke,color,label){
   const r=(size-stroke)/2;
@@ -928,12 +1031,12 @@ function ringSVG(pct,size,stroke,color,label){
         stroke="${color}" stroke-width="${stroke}"
         stroke-dasharray="${c}" stroke-dashoffset="${off}" stroke-linecap="round"/>
     </svg>
-    ${label!=null?`<div class="in" style="color:${color}">${label}</div>`:''}
+    ${label!=null?`<div class="in" style="color:${color};font-size:${Math.round(size/4)}px">${label}</div>`:''}
   </div>`;
 }
 
 /* ============================================================
-   PAGES
+   PAGE: DASHBOARD (new home)
    ============================================================ */
 function pageDashboard(){
   const M=metrics();
@@ -946,84 +1049,105 @@ function pageDashboard(){
   b.balance=b.income-b.expense;
   const mainGoal=state.goals[0];
   const recent=[...state.operations].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+  const banksCount=state.accounts.length;
   const upcoming=state.debts.filter(d=>d.status!=='closed')
     .map(d=>({d,date:nextDateForDay(d.payDay||1)}))
     .sort((a,b)=>a.date-b.date).slice(0,2);
-  return `
-  <div class="hero">
-    <div class="lbl">Баланс</div>
-    <div class="amount num">${money(b.balance)}</div>
-    <div class="sub">все счета · ${new Date().getDate()} ${MONTHS[new Date().getMonth()]}</div>
-    <div class="stats">
-      <div><small>Доход</small><b class="num">${moneyShort(b.income)}</b></div>
-      <div><small>Расход</small><b class="num">${moneyShort(b.expense)}</b></div>
-      <div><small>Net Worth</small><b class="num">${moneyShort(M.netWorth)}</b></div>
-    </div>
-  </div>
 
-  <div class="scroller">
-    <div class="tile flex">
-      ${ringSVG(M.score,64,6,scoreColor(M.score),M.score)}
-      <div>
-        <div class="l">Score</div>
-        <div class="v" style="color:${scoreColor(M.score)};font-size:15px">${scoreLabel(M.score)}</div>
-        <div class="s">из 100</div>
+  return `
+  <div class="home-wrap">
+
+    <div class="capital-card">
+      <div class="lbl">Мой капитал</div>
+      <div class="amount num">${money(M.netWorth)}</div>
+      <div class="sub">${banksCount} ${banksCount===1?'счёт':'счетов'} · обновлено сегодня</div>
+      <div class="stats">
+        <div><small>Доход</small><b class="num">+${moneyShort(b.income)}</b></div>
+        <div><small>Расход</small><b class="num">−${moneyShort(b.expense)}</b></div>
+        <div><small>Свободно</small><b class="num">${moneyShort(M.avail)}</b></div>
       </div>
     </div>
-    <div class="tile">
-      <div class="l">Safe-to-spend</div>
-      <div class="v pos num">${money(M.safeToSpend)}</div>
-      <div class="s">${M.daysLeft} дн. до зарплаты</div>
-    </div>
-    <div class="tile">
-      <div class="l">Прогноз</div>
-      <div class="v ${M.forecast>=0?'pos':'neg'} num">${money(M.forecast)}</div>
-      <div class="s">после платежей</div>
-    </div>
-    <div class="tile">
-      <div class="l">Долги</div>
-      <div class="v neg num">${moneyShort(M.debtTotal)}</div>
-      <div class="s">${state.debts.filter(d=>d.status!=='closed').length} активных</div>
-    </div>
-  </div>
 
-  ${mainGoal?`
-  <div class="section">
-    <div class="sh"><h2>Главная цель</h2>
-      <span class="link" data-nav="goals">Все →</span></div>
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:14px">
-        ${ringSVG(mainGoal.saved/mainGoal.target*100,64,6,'var(--violet)',
-          Math.round(mainGoal.saved/mainGoal.target*100)+'%')}
-        <div style="flex:1;min-width:0">
-          <b style="font-size:15px">${mainGoal.emoji} ${esc(mainGoal.name)}</b>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">
-            ${money(mainGoal.saved)} из ${money(mainGoal.target)}
-          </div>
+    <div class="quick-actions">
+      <button class="qa-income"  data-act="qa-income"  type="button">
+        ${SI('up',20,2.4)}<span>Доход</span>
+      </button>
+      <button class="qa-expense" data-act="qa-expense" type="button">
+        ${SI('down',20,2.4)}<span>Расход</span>
+      </button>
+    </div>
+
+    <div class="hcard">
+      <div class="hcard-l">
+        <span>Можно потратить</span>
+        <span style="opacity:.6">${M.daysLeft} дн. до зарплаты</span>
+      </div>
+      <div class="hcard-v" style="color:var(--accent)">${money(M.safeToSpend)}</div>
+      <div class="hcard-s">Безопасная сумма на сегодня</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="hcard" style="margin:0;display:flex;align-items:center;gap:12px" data-nav="analytics">
+        ${ringSVG(M.score,54,5,scoreColor(M.score),M.score)}
+        <div style="min-width:0">
+          <div class="hcard-l" style="margin:0 0 4px">Score</div>
+          <div style="font-size:13px;font-weight:700;color:${scoreColor(M.score)}">${scoreLabel(M.score)}</div>
         </div>
       </div>
+      <div class="hcard" style="margin:0" data-nav="debts">
+        <div class="hcard-l">Долги</div>
+        <div class="hcard-v neg num" style="font-size:18px">${moneyShort(M.debtTotal)}</div>
+        <div class="hcard-s">${state.debts.filter(d=>d.status!=='closed').length} активных</div>
+      </div>
     </div>
-  </div>`:''}
 
-  ${upcoming.length?`
-  <div class="section">
-    <div class="sh"><h2>Ближайшие платежи</h2>
-      <span class="link" data-nav="calendar">Календарь →</span></div>
-    ${upcoming.map(u=>`
-      <div class="row">
-        <div class="ic">📅</div>
-        <div class="b"><b>${esc(u.d.name)}</b>
-          <small>${fmtDM(u.date.toISOString().slice(0,10))} · ${u.d.type}</small></div>
-        <div class="amt warnc num">${money(u.d.minPayment)}</div>
-        <button class="icon-btn" data-act="pay-debt" data-id="${u.d.id}" type="button"
-          style="width:34px;height:34px;color:var(--accent)">✓</button>
-      </div>`).join('')}
-  </div>`:''}
+    ${mainGoal?`
+    <div class="hcard" data-nav="goals" style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:26px;flex:none">${mainGoal.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div class="hcard-l" style="margin:0 0 4px">
+          <span>Цель: ${esc(mainGoal.name)}</span>
+          <span style="color:var(--accent);font-weight:700">${Math.round(mainGoal.saved/mainGoal.target*100)}%</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">${money(mainGoal.saved)} из ${money(mainGoal.target)}</div>
+        <div style="height:5px;border-radius:99px;background:var(--surface3);overflow:hidden">
+          <i style="display:block;height:100%;width:${clamp(mainGoal.saved/mainGoal.target*100,0,100)}%;background:var(--accent);border-radius:99px"></i>
+        </div>
+      </div>
+    </div>`:''}
 
-  <div class="section">
-    <div class="sh"><h2>Последние операции</h2>
-      <span class="link" data-nav="operations">Все →</span></div>
-    ${recent.length?recent.map(opRow).join(''):'<div class="empty">Операций пока нет<br>Нажми ＋ внизу или Insert</div>'}
+    <div class="hcard" data-nav="accounts" style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="ic" style="width:42px;height:42px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;color:var(--text2)">${SI('bank',20)}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">Банки</div>
+          <div class="hcard-s" style="margin:2px 0 0">${banksCount} ${banksCount===1?'счёт':'счетов'} · ${money(M.assets)}</div>
+        </div>
+      </div>
+      <div style="color:var(--accent)">${SI('arrow',20)}</div>
+    </div>
+
+    ${upcoming.length?`
+    <div class="section" style="padding:0;margin-top:20px">
+      <div class="sh"><h2>Ближайшие платежи</h2>
+        <span class="link" data-nav="calendar">Все →</span></div>
+      ${upcoming.map(u=>`
+        <div class="row">
+          <div class="ic">${SI('calendar',18)}</div>
+          <div class="b"><b>${esc(u.d.name)}</b>
+            <small>${fmtDM(u.date.toISOString().slice(0,10))} · ${u.d.type}</small></div>
+          <div class="amt warnc num">${money(u.d.minPayment)}</div>
+          <button class="icon-btn" data-act="pay-debt" data-id="${u.d.id}" type="button"
+            style="width:36px;height:36px;color:var(--accent)">${SI('check',18)}</button>
+        </div>`).join('')}
+    </div>`:''}
+
+    <div class="section" style="padding:0;margin-top:20px">
+      <div class="sh"><h2>Последние операции</h2>
+        <span class="link" data-nav="operations">Все →</span></div>
+      ${recent.length?recent.map(opRow).join(''):'<div class="empty">Операций пока нет<br>Нажмите + внизу</div>'}
+    </div>
+
   </div>`;
 }
 
@@ -1032,12 +1156,16 @@ function opRow(op){
   const to=state.accounts.find(a=>a.id===op.toAccountId);
   const sign=op.type==='income'?'+':op.type==='expense'?'−':'';
   const cls=op.type==='income'?'pos':op.type==='expense'?'neg':'';
-  const icon=op.type==='transfer'?'⇄':op.type==='adjust'?'±':iconFor(op.category,op.type);
+  let icon;
+  if(op.type==='transfer')icon=SI('trending',20);
+  else if(op.type==='adjust')icon=SI('tag',20);
+  else if(op.type==='income')icon=SI('up',20);
+  else icon=SI('down',20);
   let title=op.category||'Операция';
   if(op.type==='transfer')title=`${acc?acc.name:'?'} → ${to?to.name:'?'}`;
   if(op.type==='adjust')title='Корректировка';
   return `<div class="row" data-act="edit-op" data-id="${op.id}">
-    <div class="ic">${icon}</div>
+    <div class="ic" style="color:${op.type==='income'?'var(--accent)':op.type==='expense'?'var(--red)':'var(--violet)'}">${icon}</div>
     <div class="b">
       <b>${esc(title)}</b>
       <small>${fmtDate(op.date)}${acc&&op.type!=='transfer'?' · '+esc(acc.name):''}${op.comment?' · '+esc(op.comment):''}</small>
@@ -1046,6 +1174,9 @@ function opRow(op){
   </div>`;
 }
 
+/* ============================================================
+   PAGE: OPERATIONS
+   ============================================================ */
 function pageOperations(){
   const f=state.ui.filters;
   let list=[...state.operations];
@@ -1062,7 +1193,7 @@ function pageOperations(){
   });
   const allCats=[...getCategories('income'),...getCategories('expense')];
   const catOpts='<option value="">Все категории</option>'+
-    allCats.map(c=>`<option value="${esc(c.name)}" ${f.category===c.name?'selected':''}>${c.icon} ${esc(c.name)}</option>`).join('');
+    allCats.map(c=>`<option value="${esc(c.name)}" ${f.category===c.name?'selected':''}>${esc(c.name)}</option>`).join('');
   const hasFilter=f.type||f.category||f.from||f.to||f.search;
   return `
   <div class="section" style="padding-top:6px">
@@ -1082,14 +1213,17 @@ function pageOperations(){
         <div class="field"><label>До</label>
           <input type="date" id="fTo" value="${f.to||''}"></div>
       </div>
-      ${hasFilter?'<button class="btn sm ghost" data-act="clear-filters" style="margin-top:10px" type="button">Сбросить</button>':''}
+      ${hasFilter?'<button class="btn sm ghost" data-act="clear-filters" style="margin-top:12px" type="button">Сбросить</button>':''}
     </div>
-    <div class="sh" style="margin-top:16px"><h2>История</h2>
+    <div class="sh" style="margin-top:18px"><h2>История</h2>
       <span style="font-size:12px;color:var(--muted)">${list.length} из ${state.operations.length}</span></div>
     ${list.length?list.map(opRow).join(''):'<div class="empty">Операций нет</div>'}
   </div>`;
 }
 
+/* ============================================================
+   PAGE: ANALYTICS
+   ============================================================ */
 function pageAnalytics(){
   const p=state.ui.analyticsPeriod||'month';
   const cur=aggRange(p),prev=aggRange('prev_month');
@@ -1108,17 +1242,17 @@ function pageAnalytics(){
     </div>
     <div class="card">
       <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <div style="font-size:11.5px;color:var(--muted)">Доход<b class="pos num" style="display:block;font-size:17px;margin-top:2px">${money(cur.inc)}</b></div>
-        <div style="font-size:11.5px;color:var(--muted)">Расход<b class="neg num" style="display:block;font-size:17px;margin-top:2px">${money(cur.exp)}</b></div>
+        <div style="font-size:11.5px;color:var(--muted)">Доход<b class="pos num" style="display:block;font-size:18px;margin-top:3px;font-family:'Manrope'">${money(cur.inc)}</b></div>
+        <div style="font-size:11.5px;color:var(--muted)">Расход<b class="neg num" style="display:block;font-size:18px;margin-top:3px;font-family:'Manrope'">${money(cur.exp)}</b></div>
       </div>
       <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
       <div style="display:flex;gap:16px;flex-wrap:wrap">
-        <div style="font-size:11.5px;color:var(--muted)">Остаток<b class="${cur.net>=0?'pos':'neg'} num" style="display:block;font-size:17px;margin-top:2px">${money(cur.net)}</b></div>
-        <div style="font-size:11.5px;color:var(--muted)">Δ доход<b class="${dInc>=0?'pos':'neg'}" style="display:block;font-size:15px;margin-top:2px">${dInc>=0?'+':''}${dInc.toFixed(0)}%</b></div>
-        <div style="font-size:11.5px;color:var(--muted)">Δ расход<b class="${dExp>=0?'neg':'pos'}" style="display:block;font-size:15px;margin-top:2px">${dExp>=0?'+':''}${dExp.toFixed(0)}%</b></div>
+        <div style="font-size:11.5px;color:var(--muted)">Остаток<b class="${cur.net>=0?'pos':'neg'} num" style="display:block;font-size:18px;margin-top:3px;font-family:'Manrope'">${money(cur.net)}</b></div>
+        <div style="font-size:11.5px;color:var(--muted)">Δ доход<b class="${dInc>=0?'pos':'neg'}" style="display:block;font-size:15px;margin-top:3px">${dInc>=0?'+':''}${dInc.toFixed(0)}%</b></div>
+        <div style="font-size:11.5px;color:var(--muted)">Δ расход<b class="${dExp>=0?'neg':'pos'}" style="display:block;font-size:15px;margin-top:3px">${dExp>=0?'+':''}${dExp.toFixed(0)}%</b></div>
       </div>
     </div>
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Score · факторы</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Score · факторы</h3>
     <div class="card">
       ${M.scoreBreakdown.factors.map(f=>{
         const c=f.value>=65?'var(--accent)':f.value>=45?'var(--warn)':'var(--red)';
@@ -1133,17 +1267,17 @@ function pageAnalytics(){
         </div>`;
       }).join('')}
     </div>
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Топ расходов</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Топ расходов</h3>
     <div class="card">
       ${catArr.length?catArr.slice(0,8).map(([n,v])=>{
         const pc=v/catTotal*100;
         return `<div style="margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
-            <span style="font-weight:600">${iconFor(n,'expense')} ${esc(n)}</span>
+            <span style="font-weight:600">${esc(n)}</span>
             <span style="font-weight:700" class="num">${moneyShort(v)} · ${pc.toFixed(0)}%</span>
           </div>
           <div style="height:6px;border-radius:99px;background:var(--surface3);overflow:hidden">
-            <i style="display:block;height:100%;width:${pc}%;background:var(--grad-hero);border-radius:99px"></i>
+            <i style="display:block;height:100%;width:${pc}%;background:var(--accent);border-radius:99px"></i>
           </div>
         </div>`;
       }).join(''):'<div class="empty">Расходов нет</div>'}
@@ -1151,6 +1285,9 @@ function pageAnalytics(){
   </div>`;
 }
 
+/* ============================================================
+   PAGE: CALENDAR
+   ============================================================ */
 function calendarEvents(){
   const events=[];
   const now=new Date();
@@ -1188,16 +1325,13 @@ function pageCalendar(){
   const events=calendarEvents();
   const byDay={};
   events.forEach(e=>{(byDay[e.date]=byDay[e.date]||[]).push(e)});
-
   const days=[];
   for(let i=0;i<firstDayIdx;i++)days.push(null);
   for(let d=1;d<=daysInMonth;d++)days.push(d);
-
   const selEvents=byDay[sel]||[];
-
   return `
   <div class="section" style="padding-top:6px">
-    <h2 style="font-size:17px;margin-bottom:14px">${MONTHS_FULL[mo]} ${y}</h2>
+    <h2 style="font-size:18px;margin-bottom:14px">${MONTHS_FULL[mo]} ${y}</h2>
     <div class="card" style="padding:14px">
       <div class="cal-head">
         <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
@@ -1220,15 +1354,13 @@ function pageCalendar(){
         }).join('')}
       </div>
     </div>
-
     <div class="sh" style="margin-top:16px">
       <h2>${fmtDate(sel)}</h2>
-      <button class="btn sm primary" data-act="add-to-date" data-date="${sel}" type="button">＋ Добавить</button>
+      <button class="btn sm primary" data-act="add-to-date" data-date="${sel}" type="button">${SI('plus',16,2.4)} Добавить</button>
     </div>
-
     ${selEvents.length?selEvents.map(e=>{
-      const icon=e.kind==='debt'?'🏦':e.kind==='recurring'?'🔁':
-        e.kind==='event'?'📌':'💸';
+      const icon=e.kind==='debt'?SI('bank',18):e.kind==='recurring'?SI('trending',18):
+        e.kind==='event'?SI('bell',18):SI('down',18);
       const isEditable=e.kind==='event'||e.kind==='op';
       return `<div class="row" ${isEditable?`data-act="edit-cal-event" data-kind="${e.kind}" data-id="${e.refId}"`:''}>
         <div class="ic">${icon}</div>
@@ -1238,11 +1370,10 @@ function pageCalendar(){
         </div>
         ${e.amount?`<div class="amt num">${money(e.amount)}</div>`:''}
       </div>`;
-    }).join(''):'<div class="empty">Нет событий<br>Нажми «Добавить» чтобы создать</div>'}
-
-    <h3 style="font-size:14px;margin:20px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Все события месяца (${events.length})</h3>
+    }).join(''):'<div class="empty">Нет событий<br>Нажмите «Добавить»</div>'}
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Все события (${events.length})</h3>
     ${events.slice(0,20).map(e=>{
-      const icon=e.kind==='debt'?'🏦':e.kind==='recurring'?'🔁':e.kind==='event'?'📌':'💸';
+      const icon=e.kind==='debt'?SI('bank',18):e.kind==='recurring'?SI('trending',18):e.kind==='event'?SI('bell',18):SI('down',18);
       return `<div class="row" data-cal-go="${e.date}">
         <div class="ic">${icon}</div>
         <div class="b"><b>${esc(e.title)}</b>
@@ -1253,40 +1384,43 @@ function pageCalendar(){
   </div>`;
 }
 
+/* ============================================================
+   PAGE: CATEGORIES
+   ============================================================ */
 function pageCategories(){
   const render=(type,title)=>{
     const cats=getCategories(type,true);
     const roots=cats.filter(c=>!c.parent);
     const subs=cats.filter(c=>c.parent);
     return `
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">${title}</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">${title}</h3>
     ${roots.map(c=>{
       const kids=subs.filter(s=>s.parent===c.id);
       return `<div>
         <div class="row" style="${c.hidden?'opacity:.5':''}">
-          <div class="ic">${c.icon}</div>
+          <div class="ic" style="font-size:20px">${c.icon}</div>
           <div class="b"><b>${esc(c.name)}</b>
             <small>${c.hidden?'Скрыта':(kids.length?kids.length+' подкат.':'')}</small></div>
           <button class="icon-btn" data-act="toggle-cat" data-type="${type}" data-id="${c.id}" type="button"
-            style="width:32px;height:32px;font-size:14px">${c.hidden?'👁':'🚫'}</button>
+            style="width:32px;height:32px;font-size:14px">${c.hidden?'◌':'◉'}</button>
           <button class="icon-btn" data-act="add-subcat" data-type="${type}" data-id="${c.id}" type="button"
-            style="width:32px;height:32px;font-size:16px">＋</button>
+            style="width:32px;height:32px">${SI('plus',16)}</button>
           <button class="icon-btn" data-act="edit-cat" data-type="${type}" data-id="${c.id}" type="button"
-            style="width:32px;height:32px;font-size:14px">✎</button>
+            style="width:32px;height:32px">${SI('edit',16)}</button>
         </div>
         ${kids.map(s=>`
           <div class="row" style="margin-left:22px;${s.hidden?'opacity:.5':''}">
-            <div class="ic" style="width:32px;height:32px;font-size:14px">${s.icon}</div>
+            <div class="ic" style="width:34px;height:34px;font-size:16px">${s.icon}</div>
             <div class="b"><b>${esc(s.name)}</b><small>подкатегория</small></div>
             <button class="icon-btn" data-act="toggle-cat" data-type="${type}" data-id="${s.id}" type="button"
-              style="width:32px;height:32px;font-size:14px">${s.hidden?'👁':'🚫'}</button>
+              style="width:32px;height:32px;font-size:14px">${s.hidden?'◌':'◉'}</button>
             <button class="icon-btn" data-act="edit-cat" data-type="${type}" data-id="${s.id}" type="button"
-              style="width:32px;height:32px;font-size:14px">✎</button>
+              style="width:32px;height:32px">${SI('edit',16)}</button>
           </div>`).join('')}
       </div>`;
     }).join('')}
     <button class="btn sm ghost" style="margin-top:8px" data-act="new-cat" data-type="${type}" type="button">
-      ＋ Добавить категорию
+      ${SI('plus',16)} Добавить категорию
     </button>`;
   };
   return `<div class="section" style="padding-top:6px">
@@ -1295,39 +1429,90 @@ function pageCategories(){
   </div>`;
 }
 
-const ACC_KINDS={available:'Доступно',savings:'Накопления',investment:'Инвестиции'};
+/* ============================================================
+   PAGE: ACCOUNTS (Банки)
+   ============================================================ */
 function pageAccounts(){
-  const groups={available:[],savings:[],investment:[]};
-  state.accounts.forEach(a=>groups[a.kind]&&groups[a.kind].push(a));
   const M=metrics();
-  const group=(kind,title)=>`
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">${title}</h3>
-    ${groups[kind].length?groups[kind].map(a=>`
-      <div class="row" data-act="edit-acc" data-id="${a.id}">
-        <div class="ic">${kind==='available'?'💳':kind==='savings'?'🏦':'📈'}</div>
-        <div class="b"><b>${esc(a.name)}</b>
-          <small>${ACC_KINDS[kind]} · начальный ${money(a.initial)}</small></div>
-        <div class="amt num">${money(M.bal[a.id])}</div>
-      </div>`).join(''):'<div class="empty">Нет</div>'}`;
+  const accounts=state.accounts.filter(a=>a.status!=='closed');
+  const grouped={};
+  accounts.forEach(a=>{
+    const bid=a.bankId||'other';
+    (grouped[bid]=grouped[bid]||[]).push(a);
+  });
+  let own=0,deposit=0,debt=0;
+  accounts.forEach(a=>{
+    const bal=accountBalance(a.id);
+    const g=(ACC_TYPES[a.type]||ACC_TYPES.card).group;
+    if(g==='own')own+=bal;
+    else if(g==='deposit')deposit+=bal;
+    else if(g==='debt')debt+=Math.abs(bal);
+  });
+  const total=own+deposit-debt;
+
+  let banksHtml='';
+  if(accounts.length===0){
+    banksHtml='<div class="empty"><div style="font-size:44px;margin-bottom:10px">○</div>Пока нет ни одного счёта<br>Нажмите «Добавить счёт»</div>';
+  } else {
+    banksHtml=Object.keys(grouped).map(bid=>{
+      const bank=bankInfo(bid);
+      const list=grouped[bid];
+      let bTotal=0;
+      list.forEach(a=>{
+        const bal=accountBalance(a.id);
+        const g=(ACC_TYPES[a.type]||ACC_TYPES.card).group;
+        bTotal+=(g==='debt'?-Math.abs(bal):bal);
+      });
+      return `
+      <div class="card" style="padding:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="bank-chip" style="background:${bank.color}">${bank.short}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:15px">${esc(bank.name)}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">${list.length} ${list.length===1?'счёт':'счёта'}</div>
+          </div>
+          <div style="font-weight:800;font-family:'Manrope';color:${bTotal<0?'var(--red)':'var(--accent)'};font-size:15px" class="num">${money(bTotal)}</div>
+        </div>
+        ${list.map(a=>{
+          const bal=accountBalance(a.id);
+          const t=ACC_TYPES[a.type]||ACC_TYPES.card;
+          const ic=a.type==='deposit'?SI('trending',18):
+                   (a.type==='credit'||a.type==='installment')?SI('debt',18):
+                   SI('bank',18);
+          return `<div class="row" style="margin:0;margin-top:6px" data-act="edit-acc" data-id="${a.id}">
+            <div class="ic" style="width:38px;height:38px">${ic}</div>
+            <div class="b">
+              <b>${esc(a.name)}</b>
+              <small>${t.label} · ${a.currency}</small>
+            </div>
+            <div class="amt ${bal<0?'neg':''} num">${money(bal)}</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('');
+  }
+
   return `
   <div class="section" style="padding-top:6px">
-    <div class="r2">
-      <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Доступно</div>
-        <div class="num" style="font-size:20px;font-weight:800;margin-top:6px">${money(M.avail)}</div></div>
-      <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Накопления</div>
-        <div class="num" style="font-size:20px;font-weight:800;margin-top:6px">${money(M.savings)}</div></div>
-      <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Инвестиции</div>
-        <div class="num" style="font-size:20px;font-weight:800;margin-top:6px">${money(M.invest)}</div></div>
-      <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Активы</div>
-        <div class="num pos" style="font-size:20px;font-weight:800;margin-top:6px">${money(M.assets)}</div></div>
+    <div class="capital-card" style="margin-top:0">
+      <div class="lbl">Общий баланс</div>
+      <div class="amount num">${money(total)}</div>
+      <div class="stats">
+        <div><small>Собственные</small><b class="num">${moneyShort(own)}</b></div>
+        <div><small>Депозиты</small><b class="num">${moneyShort(deposit)}</b></div>
+        <div><small>Кредиты</small><b class="num">−${moneyShort(debt)}</b></div>
+      </div>
     </div>
-    ${group('available','Доступно сейчас')}
-    ${group('savings','Накопления')}
-    ${group('investment','Инвестиции')}
-    <button class="btn block primary" style="margin-top:18px" data-act="new-acc" type="button">＋ Добавить счёт</button>
+    <button class="btn block primary" style="margin-bottom:16px" data-act="new-acc" type="button">
+      ${SI('plus',18,2.4)} Добавить счёт
+    </button>
+    ${banksHtml}
   </div>`;
 }
 
+/* ============================================================
+   PAGE: DEBTS
+   ============================================================ */
 function pageDebts(){
   const M=metrics();
   const active=state.debts.filter(d=>d.status!=='closed');
@@ -1336,41 +1521,44 @@ function pageDebts(){
     const months=debtMonths(d),prog=debtProgress(d);
     const isClosed=d.status==='closed';
     return `
-    <div class="card" style="${isClosed?'opacity:.65':''}">
+    <div class="card" style="${isClosed?'opacity:.6':''}">
       <div style="display:flex;align-items:center;gap:12px">
         ${ringSVG(prog,52,5,isClosed?'var(--accent)':'var(--warn)',Math.round(prog)+'%')}
         <div style="flex:1;min-width:0">
-          <b style="font-size:15px">${esc(d.name)}</b>
+          <b style="font-size:15px;font-weight:700">${esc(d.name)}</b>
           <div style="font-size:12px;color:var(--muted);margin-top:3px">
             ${esc(d.type)} · ${d.rate}% · ${d.payDay}-го
           </div>
         </div>
         <button class="icon-btn" data-act="edit-debt" data-id="${d.id}" type="button"
-          style="width:34px;height:34px;font-size:14px">✎</button>
+          style="width:36px;height:36px">${SI('edit',16)}</button>
       </div>
       <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
-        <div style="font-size:11px;color:var(--muted)">Остаток<b class="neg num" style="display:block;font-size:15px;font-weight:700;margin-top:2px">${money(d.balance)}</b></div>
-        <div style="font-size:11px;color:var(--muted)">Платёж<b class="num" style="display:block;font-size:15px;font-weight:700;margin-top:2px">${money(d.minPayment)}</b></div>
-        <div style="font-size:11px;color:var(--muted)">Осталось<b class="num" style="display:block;font-size:15px;font-weight:700;margin-top:2px">${months===Infinity?'∞':months+' мес.'}</b></div>
+        <div style="font-size:11px;color:var(--muted)">Остаток<b class="neg num" style="display:block;font-size:15px;font-weight:700;margin-top:3px">${money(d.balance)}</b></div>
+        <div style="font-size:11px;color:var(--muted)">Платёж<b class="num" style="display:block;font-size:15px;font-weight:700;margin-top:3px">${money(d.minPayment)}</b></div>
+        <div style="font-size:11px;color:var(--muted)">Осталось<b class="num" style="display:block;font-size:15px;font-weight:700;margin-top:3px">${months===Infinity?'∞':months+' мес.'}</b></div>
       </div>
-      ${!isClosed?`<button class="btn block sm primary" style="margin-top:12px" data-act="pay-debt" data-id="${d.id}" type="button">✓ Внести платёж</button>`:''}
+      ${!isClosed?`<button class="btn block sm primary" style="margin-top:12px" data-act="pay-debt" data-id="${d.id}" type="button">${SI('check',16)} Внести платёж</button>`:''}
     </div>`;
   };
   return `
   <div class="section" style="padding-top:6px">
     <div class="r2">
       <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Общий долг</div>
-        <div class="num neg" style="font-size:20px;font-weight:800;margin-top:6px">${money(M.debtTotal)}</div></div>
+        <div class="num neg" style="font-size:20px;font-weight:800;margin-top:6px;font-family:'Manrope'">${money(M.debtTotal)}</div></div>
       <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Нагрузка</div>
-        <div class="num ${M.debtLoad>40?'neg':'pos'}" style="font-size:20px;font-weight:800;margin-top:6px">${M.debtLoad.toFixed(0)}%</div></div>
+        <div class="num ${M.debtLoad>40?'neg':'pos'}" style="font-size:20px;font-weight:800;margin-top:6px;font-family:'Manrope'">${M.debtLoad.toFixed(0)}%</div></div>
     </div>
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Активные</h3>
-    ${active.length?active.map(render).join(''):'<div class="empty">Долгов нет 🎉</div>'}
-    ${closed.length?`<h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Закрытые</h3>${closed.map(render).join('')}`:''}
-    <button class="btn block primary" style="margin-top:18px" data-act="new-debt" type="button">＋ Добавить долг</button>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Активные</h3>
+    ${active.length?active.map(render).join(''):'<div class="empty">Долгов нет</div>'}
+    ${closed.length?`<h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Закрытые</h3>${closed.map(render).join('')}`:''}
+    <button class="btn block primary" style="margin-top:18px" data-act="new-debt" type="button">${SI('plus',18,2.4)} Добавить долг</button>
   </div>`;
 }
 
+/* ============================================================
+   PAGE: GOALS
+   ============================================================ */
 function pageGoals(){
   const accOpts=state.accounts.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
   return `
@@ -1395,22 +1583,25 @@ function pageGoals(){
             </div>
           </div>
           <button class="icon-btn" data-act="edit-goal" data-id="${g.id}" type="button"
-            style="width:34px;height:34px;font-size:14px">✎</button>
+            style="width:36px;height:36px">${SI('edit',16)}</button>
         </div>
         ${!done?`
           <div style="display:flex;gap:8px;margin-top:14px">
-            <select data-goal-src="${g.id}" style="flex:1;padding:9px 12px;font-size:13px">${accOpts}</select>
+            <select data-goal-src="${g.id}" style="flex:1;padding:10px 12px;font-size:13px">${accOpts}</select>
             <input type="text" inputmode="decimal" placeholder="₸"
-              data-goal-amt="${g.id}" style="width:110px;padding:9px 12px;font-size:13px">
-            <button class="btn sm primary" data-act="goal-topup" data-id="${g.id}" type="button">＋</button>
+              data-goal-amt="${g.id}" style="width:110px;padding:10px 12px;font-size:13px">
+            <button class="btn sm primary" data-act="goal-topup" data-id="${g.id}" type="button">${SI('plus',16)}</button>
           </div>`:
-          '<div style="text-align:center;margin-top:10px;color:var(--accent);font-weight:700">🎉 Цель достигнута</div>'}
+          '<div style="text-align:center;margin-top:12px;color:var(--accent);font-weight:700">Цель достигнута</div>'}
       </div>`;
     }).join(''):'<div class="empty">Целей пока нет</div>'}
-    <button class="btn block primary" style="margin-top:8px" data-act="new-goal" type="button">＋ Новая цель</button>
+    <button class="btn block primary" style="margin-top:8px" data-act="new-goal" type="button">${SI('plus',18,2.4)} Новая цель</button>
   </div>`;
 }
 
+/* ============================================================
+   PAGE: CAPITAL
+   ============================================================ */
 function pageCapital(){
   const M=metrics();
   const structure=[
@@ -1421,17 +1612,17 @@ function pageCapital(){
   const st=structure.reduce((s,x)=>s+Math.max(0,x.v),0)||1;
   return `
   <div class="section" style="padding-top:6px">
-    <div class="card" style="background:linear-gradient(135deg,rgba(183,148,246,.15),rgba(75,158,255,.15));border-color:var(--violet)">
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Net Worth</div>
-      <div class="num" style="font-size:34px;font-weight:800;margin-top:6px;letter-spacing:-1px">${money(M.netWorth)}</div>
+    <div class="card" style="background:linear-gradient(160deg,#0F4A2E,#0B1210);border-color:rgba(30,215,96,.2)">
+      <div style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;font-weight:700">Net Worth</div>
+      <div class="num" style="font-size:34px;font-weight:800;margin-top:6px;letter-spacing:-1.2px;color:#fff;font-family:'Manrope'">${money(M.netWorth)}</div>
     </div>
     <div class="r2" style="margin-top:12px">
       <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Активы</div>
-        <div class="num pos" style="font-size:18px;font-weight:800;margin-top:6px">${money(M.assets)}</div></div>
+        <div class="num pos" style="font-size:18px;font-weight:800;margin-top:6px;font-family:'Manrope'">${money(M.assets)}</div></div>
       <div class="card"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700">Долги</div>
-        <div class="num neg" style="font-size:18px;font-weight:800;margin-top:6px">${money(M.debtTotal)}</div></div>
+        <div class="num neg" style="font-size:18px;font-weight:800;margin-top:6px;font-family:'Manrope'">${money(M.debtTotal)}</div></div>
     </div>
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Структура</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Структура</h3>
     <div class="card">
       ${structure.map(s=>{
         const pc=Math.max(0,s.v)/st*100;
@@ -1449,17 +1640,15 @@ function pageCapital(){
   </div>`;
 }
 
+/* ============================================================
+   PAGE: NOTIFICATIONS
+   ============================================================ */
 function pageNotifications(){
   const list=state.notifications;
   const ns=state.notificationSettings;
   const settings=[
-    ['payments','Платежи'],
-    ['balance','Баланс'],
-    ['income','Доходы'],
-    ['debts','Долги'],
-    ['goals','Цели'],
-    ['analytics','Аналитика'],
-    ['recurring','Повторяющиеся']
+    ['payments','Платежи'],['balance','Баланс'],['income','Доходы'],
+    ['debts','Долги'],['goals','Цели'],['analytics','Аналитика'],['recurring','Повторяющиеся']
   ];
   return `
   <div class="section" style="padding-top:6px">
@@ -1470,11 +1659,11 @@ function pageNotifications(){
     </div>
     ${list.length?list.slice(0,40).map(n=>`
       <div class="row" style="${n.read?'opacity:.6':''}" data-act="toggle-notif" data-id="${n.id}">
-        <div class="ic">${n.level==='critical'?'🔴':n.level==='important'?'🟡':'🔵'}</div>
+        <div class="ic" style="color:${n.level==='critical'?'var(--red)':n.level==='important'?'var(--warn)':'var(--blue)'}">${SI('bell',18)}</div>
         <div class="b"><b>${esc(n.title)}</b><small>${esc(n.text)}</small></div>
         ${!n.read?'<span class="tag g">new</span>':''}
       </div>`).join(''):'<div class="empty">Уведомлений нет</div>'}
-    <h3 style="font-size:14px;margin:20px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Настройки</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Настройки</h3>
     <div class="card" style="padding:6px 12px">
       ${settings.map(([k,l])=>`
         <label class="notif-row">
@@ -1485,6 +1674,9 @@ function pageNotifications(){
   </div>`;
 }
 
+/* ============================================================
+   PAGE: PROFILE
+   ============================================================ */
 function pageProfile(){
   const p=state.profile;
   const avatarInner=p.avatar?`<img src="${p.avatar}" alt="">`:esc((p.name||'?').slice(0,1).toUpperCase());
@@ -1492,14 +1684,14 @@ function pageProfile(){
   <div class="section" style="padding-top:6px">
     <div class="profile-av" data-act="open-avatar" role="button" tabindex="0" style="cursor:pointer">
       ${avatarInner}
-      <span class="edit-badge">📷</span>
+      <span class="edit-badge">${SI('edit',14)}</span>
     </div>
-    <div style="text-align:center;margin:14px 0 22px">
+    <div style="text-align:center;margin:14px 0 24px">
       <h2 style="font-size:18px;font-weight:800">${esc(p.name||'Пользователь')}</h2>
       <div style="font-size:12.5px;color:var(--muted);margin-top:4px">${esc(p.city||p.region||'—')}</div>
     </div>
 
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Личные данные</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Личные данные</h3>
     <div class="card">
       <form class="form" id="profileForm">
         <div class="field"><label>Имя</label>
@@ -1523,7 +1715,7 @@ function pageProfile(){
       </form>
     </div>
 
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Финансовые правила</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Финансовые правила</h3>
     <div class="card">
       <form class="form" id="settingsForm">
         <div class="r2">
@@ -1542,52 +1734,55 @@ function pageProfile(){
       </form>
     </div>
 
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">AI · Алдар-Косе</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">AI · Алдар-Косе</h3>
     <div class="card" style="padding:6px 12px">
       <label class="notif-row" style="border-bottom:none">
         <input type="checkbox" id="aiEnabled" ${state.aiSettings.enabled?'checked':''}>
         <span>Доступ AI к финансовым данным</span>
       </label>
     </div>
-    <div style="font-size:12px;color:var(--muted);padding:0 12px;margin-top:6px">
+    <div style="font-size:12px;color:var(--muted);padding:0 4px;margin-top:8px">
       AI только читает данные. Ничего не изменяет без подтверждения.
     </div>
 
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Данные</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Данные</h3>
     <div class="card" style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn sm" data-act="export-json" type="button">⤓ JSON</button>
-      <button class="btn sm" data-act="export-csv" type="button">⤓ CSV</button>
-      <label class="btn sm" style="cursor:pointer">⤒ Импорт
+      <button class="btn sm" data-act="export-json" type="button">JSON</button>
+      <button class="btn sm" data-act="export-csv" type="button">CSV</button>
+      <label class="btn sm" style="cursor:pointer">Импорт
         <input type="file" accept=".json" data-act="import-json" hidden>
       </label>
     </div>
 
-    <h3 style="font-size:14px;margin:18px 0 10px;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.6px">Опасная зона</h3>
+    <h3 style="font-size:13px;margin:20px 0 12px;color:var(--red);font-weight:700;text-transform:uppercase;letter-spacing:.8px">Опасная зона</h3>
     <div class="card danger-zone">
-      <button class="btn block" data-act="reset-demo" type="button" style="margin-bottom:8px">↺ Демо-данные</button>
-      <button class="btn block danger" data-act="wipe" type="button">✕ Полностью очистить</button>
+      <button class="btn block" data-act="reset-demo" type="button" style="margin-bottom:8px">Демо-данные</button>
+      <button class="btn block danger" data-act="wipe" type="button">Полностью очистить</button>
     </div>
   </div>`;
 }
 
+/* ============================================================
+   PAGE: MORE
+   ============================================================ */
 function pageMore(){
   const items=[
-    {id:'analytics',icon:'📊',name:'Аналитика',desc:'Доходы, расходы, категории'},
-    {id:'accounts',icon:'💳',name:'Счета',desc:'Все ваши деньги'},
-    {id:'debts',icon:'🏦',name:'Долги',desc:'Кредиты и рассрочки'},
-    {id:'goals',icon:'🎯',name:'Цели',desc:'Что копите'},
-    {id:'capital',icon:'📈',name:'Капитал',desc:'Net Worth и динамика'},
-    {id:'categories',icon:'🏷️',name:'Категории',desc:'Управление'},
-    {id:'notifications',icon:'🔔',name:'Уведомления',desc:'Важные события'},
-    {id:'profile',icon:'👤',name:'Профиль',desc:'Настройки, тема, экспорт'}
+    {id:'analytics',icon:SI('analytics',20),name:'Аналитика',desc:'Доходы, расходы, категории'},
+    {id:'accounts',icon:SI('bank',20),name:'Банки',desc:'Все ваши счета и карты'},
+    {id:'debts',icon:SI('debt',20),name:'Долги',desc:'Кредиты и рассрочки'},
+    {id:'goals',icon:SI('target',20),name:'Цели',desc:'Что копите'},
+    {id:'capital',icon:SI('trending',20),name:'Капитал',desc:'Net Worth и динамика'},
+    {id:'categories',icon:SI('tag',20),name:'Категории',desc:'Управление'},
+    {id:'notifications',icon:SI('bell',20),name:'Уведомления',desc:'Важные события'},
+    {id:'profile',icon:SI('user',20),name:'Профиль',desc:'Настройки, тема, экспорт'}
   ];
   return `
   <div class="section" style="padding-top:6px">
     ${items.map(i=>`
       <div class="row" data-nav="${i.id}">
-        <div class="ic" style="font-size:20px">${i.icon}</div>
+        <div class="ic">${i.icon}</div>
         <div class="b"><b>${i.name}</b><small>${i.desc}</small></div>
-        <div style="color:var(--muted);font-size:20px">›</div>
+        <div style="color:var(--muted2)">${SI('arrow',18)}</div>
       </div>`).join('')}
   </div>`;
 }
@@ -1598,11 +1793,9 @@ function pageMore(){
 function render(){
   document.documentElement.setAttribute('data-theme',state.theme||'dark');
   const meta=document.querySelector('meta[name=theme-color]');
-  if(meta)meta.content=state.theme==='dark'?'#0A0E13':'#F4F6FA';
-
+  if(meta)meta.content=state.theme==='dark'?'#0B1210':'#F5F7F6';
   renderTopbar();
   renderNav();
-
   const tab=state.ui.tab;
   const v=$('#view');
   let html='';
@@ -1622,7 +1815,6 @@ function render(){
     default: html=pageDashboard();
   }
   v.innerHTML=html;
-
   window.removeEventListener('scroll',onScroll);
   window.addEventListener('scroll',onScroll,{passive:true});
   onScroll();
@@ -1633,21 +1825,17 @@ function onScroll(){
 }
 
 /* ============================================================
-   GLOBAL CLICK DELEGATION
+   GLOBAL CLICK
    ============================================================ */
 document.addEventListener('click',function(e){
   const t=e.target;
   if(!t||!t.closest)return;
-
   const el=t.closest('[data-act],[data-nav],[data-cal-day],[data-cal-go],[data-ftype],[data-period]');
   if(!el)return;
-
   if(t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA'){
     if(t.type==='checkbox')return;
   }
-
   e.preventDefault();
-
   const act=el.dataset.act;
   const nav=el.dataset.nav;
   const calDay=el.dataset.calDay;
@@ -1668,6 +1856,8 @@ document.addEventListener('click',function(e){
 
   switch(act){
     case 'quick-add': openQuickAdd(); return;
+    case 'qa-income': openQuickAdd(null,'income'); return;
+    case 'qa-expense': openQuickAdd(null,'expense'); return;
     case 'close-sheet': closeSheet(); return;
     case 'toggle-theme':
       state.theme=state.theme==='dark'?'light':'dark';
@@ -1701,7 +1891,7 @@ document.addEventListener('click',function(e){
       return;
     case 'reset-demo':
       if(!confirm('Заменить демо-данными?'))return;
-      state=seed();save();render();toast('Демо-данные загружены','g');return;
+      state=seed();state.accounts.forEach(ensureAccountFields);save();render();toast('Демо-данные загружены','g');return;
     case 'wipe':
       if(!confirm('Удалить все данные?'))return;
       state=seed();
@@ -1714,50 +1904,29 @@ document.addEventListener('click',function(e){
 });
 
 /* ============================================================
-   CHANGE — настройки, фильтры, импорт
+   CHANGE / INPUT
    ============================================================ */
 document.addEventListener('change',function(e){
-  const t=e.target;
-  if(!t)return;
-
-  // Настройки уведомлений
+  const t=e.target;if(!t)return;
   if(t.dataset&&t.dataset.notif){
-    const key=t.dataset.notif;
-    state.notificationSettings[key]=t.checked;
-    save();
-    const labels={
-      payments:'Платежи',balance:'Баланс',income:'Доходы',
-      debts:'Долги',goals:'Цели',analytics:'Аналитика',recurring:'Повторяющиеся'
-    };
-    toast(
-      (t.checked?'✓ Включено: ':'✕ Отключено: ')+(labels[key]||key),
-      t.checked?'g':'y'
-    );
+    state.notificationSettings[t.dataset.notif]=t.checked;save();
+    const labels={payments:'Платежи',balance:'Баланс',income:'Доходы',debts:'Долги',
+      goals:'Цели',analytics:'Аналитика',recurring:'Повторяющиеся'};
+    toast((t.checked?'Включено: ':'Отключено: ')+(labels[t.dataset.notif]||''),t.checked?'g':'y');
     return;
   }
-
-  // AI доступ
   if(t.id==='aiEnabled'){
-    state.aiSettings.enabled=t.checked;
-    save();
-    toast(t.checked?'✓ AI-доступ включён':'✕ AI-доступ отключён',t.checked?'g':'y');
+    state.aiSettings.enabled=t.checked;save();
+    toast(t.checked?'AI-доступ включён':'AI-доступ отключён',t.checked?'g':'y');
     return;
   }
-
-  // Фильтры истории
   if(t.id==='fCategory'){state.ui.filters.category=t.value;save();render();return}
   if(t.id==='fFrom'){state.ui.filters.from=t.value;save();render();return}
   if(t.id==='fTo'){state.ui.filters.to=t.value;save();render();return}
-
-  // Импорт
   if(t.dataset&&t.dataset.act==='import-json'&&t.files&&t.files[0]){
     importJSON(t.files[0]);return;
   }
 });
-
-/* ============================================================
-   INPUT — поиск
-   ============================================================ */
 document.addEventListener('input',function(e){
   const t=e.target;
   if(t&&t.id==='fSearch'){
@@ -1768,10 +1937,6 @@ document.addEventListener('input',function(e){
     }
   }
 });
-
-/* ============================================================
-   FORMS — profile, settings
-   ============================================================ */
 document.addEventListener('submit',function(e){
   const f=e.target;
   if(f.id==='profileForm'){
@@ -1797,68 +1962,42 @@ document.addEventListener('submit',function(e){
 });
 
 /* ============================================================
-   KEYBOARD — ESC / Insert / Backspace / Cmd+N
+   KEYBOARD
    ============================================================ */
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     if(closeTop()){e.preventDefault();return}
-    if(state.ui.tab!=='dashboard'){
-      e.preventDefault();
-      go('dashboard');
-    }
+    if(state.ui.tab!=='dashboard'){e.preventDefault();go('dashboard');}
     return;
   }
-  if(e.key==='Insert'){
-    e.preventDefault();
-    openQuickAdd();
-    return;
-  }
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){
-    e.preventDefault();
-    openQuickAdd();
-    return;
-  }
+  if(e.key==='Insert'){e.preventDefault();openQuickAdd();return}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'){e.preventDefault();openQuickAdd();return}
   if(e.key==='Backspace'&&
      !['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&
      state.ui.tab!=='dashboard'){
-    e.preventDefault();
-    go('dashboard');
-    return;
+    e.preventDefault();go('dashboard');return;
   }
 });
 
 /* ============================================================
    AVATAR
    ============================================================ */
-function openAvatarPicker(){
-  $('#avatarInput').value='';
-  $('#avatarInput').click();
-}
+function openAvatarPicker(){$('#avatarInput').value='';$('#avatarInput').click()}
 $('#avatarInput').addEventListener('change',function(e){
-  const file=e.target.files[0];
-  if(!file)return;
+  const file=e.target.files[0];if(!file)return;
   const okTypes=['image/jpeg','image/jpg','image/png','image/webp'];
-  if(!okTypes.includes(file.type)){
-    toast('Поддерживаются JPG, PNG, WEBP','r');
-    return;
-  }
-  if(file.size>4*1024*1024){
-    toast('Файл слишком большой (макс. 4 МБ)','r');
-    return;
-  }
+  if(!okTypes.includes(file.type)){toast('Поддерживаются JPG, PNG, WEBP','r');return}
+  if(file.size>4*1024*1024){toast('Файл слишком большой (макс. 4 МБ)','r');return}
   const reader=new FileReader();
   reader.onload=ev=>{
     const dataUrl=ev.target.result;
     compressImage(dataUrl,320,0.85,function(out){
       state.profile.avatar=out;
-      try{
-        save();
-        toast('Аватар обновлён','g');
-        render();
-      }catch(err){
+      try{save();toast('Аватар обновлён','g');render()}
+      catch(err){
         compressImage(dataUrl,200,0.7,function(out2){
           state.profile.avatar=out2;
-          try{save();toast('Аватар обновлён (сжат)','g');render()}
+          try{save();toast('Аватар обновлён','g');render()}
           catch(e2){toast('Не удалось сохранить','r')}
         });
       }
@@ -1873,14 +2012,9 @@ function compressImage(dataUrl,maxSize,quality,cb){
     const scale=Math.min(1,maxSize/Math.max(img.width,img.height));
     const w=Math.round(img.width*scale);
     const h=Math.round(img.height*scale);
-    const c=document.createElement('canvas');
-    c.width=w;c.height=h;
-    const ctx=c.getContext('2d');
-    ctx.drawImage(img,0,0,w,h);
-    try{
-      const out=c.toDataURL('image/jpeg',quality);
-      cb(out);
-    }catch(e){cb(dataUrl)}
+    const c=document.createElement('canvas');c.width=w;c.height=h;
+    const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);
+    try{cb(c.toDataURL('image/jpeg',quality))}catch(e){cb(dataUrl)}
   };
   img.onerror=function(){cb(dataUrl)};
   img.src=dataUrl;
@@ -1889,20 +2023,21 @@ function compressImage(dataUrl,maxSize,quality,cb){
 /* ============================================================
    OPERATIONS
    ============================================================ */
-function openQuickAdd(presetDate){
+function openQuickAdd(presetDate,presetType){
   const date=presetDate||todayISO();
+  const initType=presetType||'income';
   const accOpts=state.accounts.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
   openSheet('Новая операция',`
     <div class="seg" id="qaType">
-      <button type="button" data-qa-t="income" class="on">Доход</button>
-      <button type="button" data-qa-t="expense">Расход</button>
+      <button type="button" data-qa-t="income" class="${initType==='income'?'on':''}">Доход</button>
+      <button type="button" data-qa-t="expense" class="${initType==='expense'?'on':''}">Расход</button>
       <button type="button" data-qa-t="transfer">Перевод</button>
     </div>
-    <input type="hidden" name="type" value="income">
+    <input type="hidden" name="type" value="${initType}">
     <div class="field"><label>Сумма, ₸</label>
       <input name="amount" type="text" inputmode="decimal" placeholder="0" required></div>
     <div class="field" id="qaCatField"><label>Категория</label>
-      <select name="category">${catOptions('income')}</select></div>
+      <select name="category">${catOptions(initType)}</select></div>
     <div class="field" id="qaToField" style="display:none"><label>Куда</label>
       <select name="toAccountId">${accOpts}</select></div>
     <div class="r2">
@@ -1924,14 +2059,12 @@ function openQuickAdd(presetDate){
       comment:(data.comment||'').trim(),status:'done',createdAt:Date.now()
     };
     state.operations.push(op);save();render();
-    toast(data.type==='income'?'Доход добавлен':'Расход добавлен','g');
+    toast(data.type==='income'?'Доход добавлен':data.type==='expense'?'Расход добавлен':'Перевод добавлен','g');
   });
   setTimeout(()=>{
-    const seg=$('#qaType');
-    if(!seg)return;
+    const seg=$('#qaType');if(!seg)return;
     const hidden=seg.parentElement.querySelector('[name=type]');
-    const catField=$('#qaCatField');
-    const toField=$('#qaToField');
+    const catField=$('#qaCatField'),toField=$('#qaToField');
     const catSel=catField.querySelector('select');
     seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{
       seg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
@@ -1996,21 +2129,34 @@ function editOp(id){
 
 function editAcc(id){
   const a=state.accounts.find(x=>x.id===id);if(!a)return;
+  ensureAccountFields(a);
+  const bankOpts=KZ_BANKS.map(b=>`<option value="${b.id}" ${a.bankId===b.id?'selected':''}>${b.name}</option>`).join('');
+  const typeOpts=Object.keys(ACC_TYPES).map(k=>
+    `<option value="${k}" ${a.type===k?'selected':''}>${ACC_TYPES[k].label}</option>`).join('');
+  const currOpts=CURRENCIES.map(c=>`<option ${a.currency===c?'selected':''}>${c}</option>`).join('');
   openSheet('Счёт',`
     <div class="field"><label>Название</label>
       <input name="name" value="${esc(a.name)}" required></div>
-    <div class="field"><label>Тип</label>
-      <select name="kind">
-        <option value="available" ${a.kind==='available'?'selected':''}>Доступно</option>
-        <option value="savings" ${a.kind==='savings'?'selected':''}>Накопления</option>
-        <option value="investment" ${a.kind==='investment'?'selected':''}>Инвестиции</option>
-      </select></div>
-    <div class="field"><label>Начальный баланс</label>
-      <input name="initial" type="text" inputmode="decimal" value="${a.initial}"></div>
+    <div class="field"><label>Банк</label>
+      <select name="bankId">${bankOpts}</select></div>
+    <div class="field"><label>Тип счёта</label>
+      <select name="type">${typeOpts}</select></div>
+    <div class="r2">
+      <div class="field"><label>Баланс</label>
+        <input name="initial" type="text" inputmode="decimal" value="${a.initial}"></div>
+      <div class="field"><label>Валюта</label>
+        <select name="currency">${currOpts}</select></div>
+    </div>
     <button type="button" class="btn block danger" data-del-acc="${a.id}" style="margin-top:8px">Удалить</button>
   `,data=>{
-    a.name=data.name.trim();a.kind=data.kind;
+    a.name=data.name.trim();
+    a.bankId=data.bankId;
+    a.type=data.type;
+    if(data.type==='deposit')a.kind='savings';
+    else if(data.type==='credit'||data.type==='installment')a.kind='available';
+    else a.kind='available';
     a.initial=parseAmount(data.initial)||0;
+    a.currency=data.currency;
     save();render();toast('Сохранено','g');
   });
   setTimeout(()=>{
@@ -2154,8 +2300,7 @@ function payDebt(id){
     <div class="field"><label>Дата</label>
       <input name="date" type="date" value="${todayISO()}"></div>
   `,data=>{
-    const amt=Math.abs(parseAmount(data.amount)||0);
-    if(amt<=0)return;
+    const amt=Math.abs(parseAmount(data.amount)||0);if(amt<=0)return;
     const interest=debtInterest(d);
     const bodyPart=Math.max(0,Math.min(amt-interest,d.balance));
     d.balance=Math.max(0,d.balance-bodyPart);
@@ -2217,8 +2362,7 @@ function addToDate(date){
         id:uid(),date:data.date,title:data.title.trim(),
         comment:(data.comment||'').trim(),amount:parseAmount(data.amount)||0
       });
-      save();render();toast('Событие добавлено','g');
-      return;
+      save();render();toast('Событие добавлено','g');return;
     }
     const amount=Math.abs(parseAmount(data.amount));
     state.operations.push({
@@ -2285,7 +2429,7 @@ function editCat(type,id){
   openSheet('Категория',`
     <div class="field"><label>Название</label>
       <input name="name" value="${esc(cat.name)}" required></div>
-    <div class="field"><label>Иконка</label>
+    <div class="field"><label>Иконка (эмодзи)</label>
       <input name="icon" value="${cat.icon}" maxlength="3"></div>
     <button type="button" class="btn block danger" data-del-cat="${cat.id}" style="margin-top:8px">Удалить</button>
   `,data=>{
@@ -2304,10 +2448,8 @@ function editCat(type,id){
 function addSubcat(type,parentId){
   const parent=state.categories[type].find(c=>c.id===parentId);if(!parent)return;
   openSheet('Подкатегория в «'+parent.name+'»',`
-    <div class="field"><label>Название</label>
-      <input name="name" required></div>
-    <div class="field"><label>Иконка</label>
-      <input name="icon" value="•" maxlength="3"></div>
+    <div class="field"><label>Название</label><input name="name" required></div>
+    <div class="field"><label>Иконка</label><input name="icon" value="•" maxlength="3"></div>
   `,data=>{
     state.categories[type].push({
       id:uid(),name:data.name.trim(),icon:data.icon||'•',
@@ -2318,10 +2460,8 @@ function addSubcat(type,parentId){
 }
 function newCat(type){
   openSheet('Новая категория',`
-    <div class="field"><label>Название</label>
-      <input name="name" required></div>
-    <div class="field"><label>Иконка</label>
-      <input name="icon" value="•" maxlength="3"></div>
+    <div class="field"><label>Название</label><input name="name" required></div>
+    <div class="field"><label>Иконка</label><input name="icon" value="•" maxlength="3"></div>
   `,data=>{
     state.categories[type].push({
       id:uid(),name:data.name.trim(),icon:data.icon||'•',
@@ -2330,31 +2470,44 @@ function newCat(type){
     save();render();toast('Категория добавлена','g');
   });
 }
+
 function newAcc(){
+  const bankOpts=KZ_BANKS.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+  const typeOpts=Object.keys(ACC_TYPES).map(k=>
+    `<option value="${k}" ${k==='card'?'selected':''}>${ACC_TYPES[k].label}</option>`).join('');
+  const currOpts=CURRENCIES.map(c=>`<option ${c==='KZT'?'selected':''}>${c}</option>`).join('');
   openSheet('Новый счёт',`
     <div class="field"><label>Название</label>
-      <input name="name" required></div>
-    <div class="field"><label>Тип</label>
-      <select name="kind">
-        <option value="available">Доступно</option>
-        <option value="savings">Накопления</option>
-        <option value="investment">Инвестиции</option>
-      </select></div>
-    <div class="field"><label>Начальный баланс</label>
-      <input name="initial" type="text" inputmode="decimal" value="0"></div>
+      <input name="name" placeholder="Например: Kaspi Gold" required></div>
+    <div class="field"><label>Банк</label>
+      <select name="bankId">${bankOpts}</select></div>
+    <div class="field"><label>Тип счёта</label>
+      <select name="type">${typeOpts}</select></div>
+    <div class="r2">
+      <div class="field"><label>Баланс</label>
+        <input name="initial" type="text" inputmode="decimal" value="0"></div>
+      <div class="field"><label>Валюта</label>
+        <select name="currency">${currOpts}</select></div>
+    </div>
   `,data=>{
+    const type=data.type||'card';
+    let kind='available';
+    if(type==='deposit')kind='savings';
     state.accounts.push({
-      id:uid(),name:data.name.trim(),kind:data.kind,
-      initial:parseAmount(data.initial)||0
+      id:uid(),name:data.name.trim(),
+      bankId:data.bankId,type:type,kind:kind,
+      initial:parseAmount(data.initial)||0,
+      currency:data.currency||'KZT',
+      status:'active',createdAt:todayISO()
     });
     save();render();toast('Счёт добавлен','g');
   });
 }
+
 function newDebt(){
   const accOpts=state.accounts.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
   openSheet('Новый долг',`
-    <div class="field"><label>Название</label>
-      <input name="name" required></div>
+    <div class="field"><label>Название</label><input name="name" required></div>
     <div class="field"><label>Тип</label>
       <select name="type">
         ${['Ипотека','Кредит','Рассрочка','Кредитная карта','Частный долг','Другой долг']
@@ -2392,8 +2545,7 @@ function newDebt(){
 function newGoal(){
   const accOpts=state.accounts.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
   openSheet('Новая цель',`
-    <div class="field"><label>Название</label>
-      <input name="name" required></div>
+    <div class="field"><label>Название</label><input name="name" required></div>
     <div class="field"><label>Иконка</label>
       <select name="emoji">
         ${['🏠','🚗','✈️','💍','📱','🎓','🛠️','👨‍👩‍👧','💰','🎯']
@@ -2421,8 +2573,7 @@ function newGoal(){
 function newRec(){
   const accOpts=state.accounts.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('');
   openSheet('Повторяющийся платёж',`
-    <div class="field"><label>Название</label>
-      <input name="name" required></div>
+    <div class="field"><label>Название</label><input name="name" required></div>
     <div class="field"><label>Сумма</label>
       <input name="amount" type="text" inputmode="decimal" required></div>
     <div class="field"><label>Периодичность</label>
@@ -2485,6 +2636,7 @@ function importJSON(file){
       if(!state.ui.aiChat)state.ui.aiChat=[];
       if(!state.categories)state.categories=defaultCategories();
       if(!state.aiSettings)state.aiSettings={enabled:true,language:'ru'};
+      state.accounts.forEach(ensureAccountFields);
       save();render();toast('Импорт успешен','g');
     }catch(err){toast('Не удалось загрузить файл','r')}
   };
@@ -2492,7 +2644,7 @@ function importJSON(file){
 }
 
 /* ============================================================
-   AI
+   AI (сокращённо — та же логика)
    ============================================================ */
 const AI=(function(){
   function hasAccess(){return state.aiSettings&&state.aiSettings.enabled}
@@ -2528,26 +2680,20 @@ const AI=(function(){
     ru:{
       greet:()=>`Сәлем! Я Алдар-Косе — твой финансовый помощник.\n\nСпроси меня про:\n• Safe-to-spend\n• Score\n• долги и платежи\n• цели\n• необычные расходы\n• прогноз до зарплаты`,
       help:()=>`Умею:\n• Объяснять Safe-to-spend и Score\n• Анализировать доходы, расходы, долги, цели\n• Находить необычные траты\n• Строить прогноз\n• Помогать с бюджетом`,
-      score:()=>{const M=metrics();
-        let s=`Qarajat Score: ${M.score}/100 — ${scoreLabel(M.score)}.\n\n`;
-        M.scoreBreakdown.factors.forEach(f=>{s+=`• ${f.name}: ${f.value} — ${f.desc}\n`});
-        return s},
+      score:()=>{const M=metrics();let s=`Qarajat Score: ${M.score}/100 — ${scoreLabel(M.score)}.\n\n`;
+        M.scoreBreakdown.factors.forEach(f=>{s+=`• ${f.name}: ${f.value} — ${f.desc}\n`});return s},
       sts:()=>{const M=metrics();
         return `Safe-to-spend — сколько можно потратить сегодня.\n\n`+
-          `• Доступно: ${money(M.avail)}\n`+
-          `• Платежи: −${money(M.upcomingBeforeSalary)}\n`+
-          `• План: −${money(M.plannedExpenses)}\n`+
-          `• Резерв: −${money(M.reserve)}\n`+
-          `• Дней: ${M.daysLeft}\n\n`+
-          `👉 Безопасно: ${money(M.safeToSpend)}`},
+          `• Доступно: ${money(M.avail)}\n• Платежи: −${money(M.upcomingBeforeSalary)}\n`+
+          `• План: −${money(M.plannedExpenses)}\n• Резерв: −${money(M.reserve)}\n`+
+          `• Дней: ${M.daysLeft}\n\n👉 Безопасно: ${money(M.safeToSpend)}`},
       debt:()=>{const M=metrics();
         const a=state.debts.filter(d=>d.status!=='closed');
-        if(!a.length)return 'Активных долгов нет! 🎉';
+        if(!a.length)return 'Активных долгов нет!';
         let s=`Долгов: ${a.length}. Общий остаток: ${money(M.debtTotal)}.\n`;
         s+=`В месяц: ${money(M.debtMonthly)} (${M.debtLoad.toFixed(0)}% дохода).\n\n`;
         a.forEach(d=>{const m=debtMonths(d);
-          s+=`• ${d.name}: ${money(d.balance)} · ${m===Infinity?'∞':m+' мес.'}\n`});
-        return s},
+          s+=`• ${d.name}: ${money(d.balance)} · ${m===Infinity?'∞':m+' мес.'}\n`});return s},
       goals:()=>{if(!state.goals.length)return 'Целей нет.';
         return state.goals.map(g=>`${g.emoji} ${g.name}: ${(g.saved/g.target*100).toFixed(0)}% · ${money(g.target-g.saved)}`).join('\n')},
       expense:()=>{const c=aggRange('month');
@@ -2555,10 +2701,8 @@ const AI=(function(){
         const cats={};c.done.filter(o=>o.type==='expense').forEach(o=>{cats[o.category]=(cats[o.category]||0)+o.amount});
         const arr=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,5);
         return `Расходы: ${money(c.exp)}\n\nТоп-5:\n`+arr.map(([n,v])=>`• ${n}: ${money(v)}`).join('\n')},
-      income:()=>{const c=aggRange('month');
-        return `Доход за 30 дней: ${money(c.inc)}`},
-      unusual:()=>{const u=unusual();
-        if(!u.length)return 'Необычных трат нет.';
+      income:()=>{const c=aggRange('month');return `Доход за 30 дней: ${money(c.inc)}`},
+      unusual:()=>{const u=unusual();if(!u.length)return 'Необычных трат нет.';
         return 'Крупные траты:\n\n'+u.map(o=>`• ${fmtDate(o.date)} — ${o.category}: ${money(o.amount)}`).join('\n')},
       forecast:()=>{const M=metrics();
         return `Прогноз до зарплаты (${M.daysLeft} дн.):\n\n`+
@@ -2574,17 +2718,14 @@ const AI=(function(){
       advice:()=>{const M=metrics();const tips=[];
         if(M.safeToSpend<1000)tips.push('Safe-to-spend низкий — избегай лишних трат.');
         if(M.debtLoad>30)tips.push('Долговая нагрузка высокая.');
-        if(M.savingsRate<10)tips.push('Savings Rate <10%. Откладывай больше.');
+        if(M.savingsRate<10)tips.push('Savings Rate <10%.');
         if(M.cushionMonths<3)tips.push('Подушка < 3 мес.');
-        const u=unusual();
-        if(u.length)tips.push(`Нашёл ${u.length} необычно крупных трат.`);
-        if(!tips.length)tips.push('Финансы в порядке! 🎉');
+        const u=unusual();if(u.length)tips.push(`Нашёл ${u.length} необычно крупных трат.`);
+        if(!tips.length)tips.push('Финансы в порядке!');
         return 'Советы:\n\n'+tips.map(t=>'• '+t).join('\n')},
       balance:()=>{const M=metrics();
-        return `Баланс: ${money(M.netWorth)}\n\n`+
-          `• Доступно: ${money(M.avail)}\n`+
-          `• Накопления: ${money(M.savings)}\n`+
-          `• Долги: −${money(M.debtTotal)}`},
+        return `Баланс: ${money(M.netWorth)}\n\n• Доступно: ${money(M.avail)}\n`+
+          `• Накопления: ${money(M.savings)}\n• Долги: −${money(M.debtTotal)}`},
       unknown:()=>'Не понял вопрос. Спроси про Safe-to-spend, Score, долги, цели, расходы, прогноз или бюджет.'
     },
     kk:{
@@ -2636,7 +2777,7 @@ function renderAIBody(){
     </div>
   `).join(''):`
     <div class="ai-msg bot">
-      <b>Алдар-Косе:</b> Сәлем! 👋<br><br>
+      <b>Алдар-Косе:</b> Сәлем!<br><br>
       Я твой финансовый помощник. Спроси про <b>Safe-to-spend</b>,
       <b>Score</b>, долги, цели, прогноз или бюджет.
     </div>`;
@@ -2666,65 +2807,43 @@ $('#aiInput').addEventListener('keydown',e=>{
     const v=e.target.value;if(v){sendAI(v);e.target.value=''}}
 });
 
-try{
-  history.replaceState({tab:state.ui.tab||'dashboard'},'','#'+(state.ui.tab||'dashboard'));
-}catch(e){}
-
+try{history.replaceState({tab:state.ui.tab||'dashboard'},'','#'+(state.ui.tab||'dashboard'));}catch(e){}
 if(location.hash&&location.hash.length>1){
   const t=location.hash.slice(1);
   if(TITLES[t])state.ui.tab=t;
 }
 
 render();
+
+/* ============================================================
+   PWA INSTALL
+   ============================================================ */
+(function(){
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('./service-worker.js',{scope:'./'})
+        .catch(function(e){console.warn('SW failed',e)});
+    });
+  }
+  var btn=document.getElementById('qarajat-install-btn');
+  if(!btn)return;
+  var prompt=null;
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+  var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  if(isStandalone)return;
+  if(isIOS)btn.style.display='block';
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();prompt=e;btn.style.display='block';
+  });
+  btn.addEventListener('click',function(){
+    if(prompt){prompt.prompt();prompt.userChoice.then(function(){btn.style.display='none';prompt=null});return}
+    if(isIOS){alert('iPhone:\n\n1. Нажмите «Поделиться»\n2. «На экран Домой»\n3. «Добавить»');return}
+    alert('Откройте меню браузера (⋮) и выберите:\n\n«Установить приложение»\nили «Добавить на главный экран».');
+  });
+  window.addEventListener('appinstalled',function(){btn.style.display='none'});
+})();
+
 })();
 </script>
 </body>
-  <script src="./banks.js"></script>
-  <script>
-(function () {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('./service-worker.js', { scope: './' })
-        .catch(function (e) { console.warn('SW failed', e); });
-    });
-  }
-
-  var btn = document.getElementById('qarajat-install-btn');
-  if (!btn) return;
-
-  var prompt = null;
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  var isStandalone = window.matchMedia('(display-mode: standalone)').matches
-                  || window.navigator.standalone === true;
-
-  if (isStandalone) return;
-  if (isIOS) btn.style.display = 'block';
-
-  window.addEventListener('beforeinstallprompt', function (e) {
-    e.preventDefault();
-    prompt = e;
-    btn.style.display = 'block';
-  });
-
-  btn.addEventListener('click', function () {
-    if (prompt) {
-      prompt.prompt();
-      prompt.userChoice.then(function () {
-        btn.style.display = 'none';
-        prompt = null;
-      });
-      return;
-    }
-    if (isIOS) {
-      alert('iPhone:\n\n1. Нажмите «Поделиться» (квадрат со стрелкой).\n2. Выберите «На экран Домой».\n3. Нажмите «Добавить».');
-      return;
-    }
-    alert('Откройте меню браузера (⋮) и выберите:\n\n«Установить приложение»\nили «Добавить на главный экран».');
-  });
-
-  window.addEventListener('appinstalled', function () {
-    btn.style.display = 'none';
-  });
-})();
-</script>
 </html>
