@@ -469,7 +469,7 @@ input[type="checkbox"]:checked,input[type="radio"]:checked{background:var(--acce
 'use strict';
 
 /* ============================================================
-   SVG ИКОНКИ (единый контурный стиль)
+   SVG ИКОНКИ
    ============================================================ */
 const SICONS = {
   home:       '<path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M3 10.5h18"/><path d="M9 21v-6h6v6"/><path d="M5.5 14.5h3v3h-3z"/><path d="M15.5 14.5h3v3h-3z"/>',
@@ -517,9 +517,15 @@ const moneyShort=n=>{const a=Math.abs(n);
   return Math.round(n)+''};
 const MONTHS=['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const MONTHS_FULL=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const todayISO=()=>{const d=new Date();
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const dShift=d=>{const x=new Date();x.setDate(x.getDate()+d);return x.toISOString().slice(0,10)};
+
+const isoLocal=d=>{
+  const y=d.getFullYear();
+  const m=String(d.getMonth()+1).padStart(2,'0');
+  const day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+};
+const todayISO=()=>isoLocal(new Date());
+const dShift=d=>{const x=new Date();x.setDate(x.getDate()+d);return isoLocal(x)};
 const parseD=s=>{if(!s)return new Date();const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const fmtDate=s=>{if(!s)return '—';const d=parseD(s);
   return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear()};
@@ -640,18 +646,39 @@ function defaultCategories(){
 function getCategories(type,showHidden){
   return (state.categories[type]||[]).filter(c=>showHidden||!c.hidden);
 }
-function catOptions(type,selected){
+function catOptions(type,selected,selectedId){
   const cats=getCategories(type);
   const roots=cats.filter(c=>!c.parent);
   const subs=cats.filter(c=>c.parent);
+  const isSel = (c) => {
+    if(selectedId) return c.id===selectedId;
+    return selected!=null && c.name===selected;
+  };
   let html='';
   roots.forEach(r=>{
-    html+=`<option value="${esc(r.name)}" ${r.name===selected?'selected':''}>${esc(r.name)}</option>`;
+    html+=`<option value="${esc(r.name)}" data-cat-id="${esc(r.id)}" ${isSel(r)?'selected':''}>${esc(r.name)}</option>`;
     subs.filter(s=>s.parent===r.id).forEach(s=>{
-      html+=`<option value="${esc(s.name)}" ${s.name===selected?'selected':''}>— ${esc(s.name)}</option>`;
+      html+=`<option value="${esc(s.name)}" data-cat-id="${esc(s.id)}" ${isSel(s)?'selected':''}>— ${esc(s.name)}</option>`;
     });
   });
   return html;
+}
+function catNameById(type,id){
+  const c=(state.categories[type]||[]).find(x=>x.id===id);
+  return c?c.name:null;
+}
+function catIdByName(type,name){
+  const c=(state.categories[type]||[]).find(x=>x.name===name);
+  return c?c.id:null;
+}
+/* P1-2 FIX: безопасный выбор категории для платежа */
+function pickExpenseCategory(preferred){
+  const cats=state.categories.expense||[];
+  if(preferred && cats.some(c=>c.name===preferred && !c.hidden)) return preferred;
+  const other=cats.find(c=>c.name==='Другое' && !c.hidden);
+  if(other) return 'Другое';
+  const visible=cats.find(c=>!c.hidden);
+  return visible ? visible.name : (cats[0] ? cats[0].name : '');
 }
 
 /* ============================================================
@@ -719,8 +746,18 @@ function load(){
   return null;
 }
 function save(){
-  try{localStorage.setItem(LS_KEY,JSON.stringify(state))}
-  catch(e){memoryStore=state;console.warn('save failed')}
+  try{
+    localStorage.setItem(LS_KEY,JSON.stringify(state));
+  }catch(e){
+    memoryStore=state;
+    const isQuota = e && (e.name==='QuotaExceededError' || e.code===22 || e.code===1014);
+    if(isQuota){
+      try{toast('Хранилище переполнено. Данные не сохраняются на устройстве.','r')}catch(_){}
+    }else{
+      try{console.warn('save failed',e)}catch(_){}
+    }
+  }
+  try{ refreshAIOpen(); }catch(e){}
 }
 let state=load()||seed();
 state.ui=state.ui||{tab:'dashboard',aiChat:[],filters:{}};
@@ -735,7 +772,12 @@ state.events=state.events||[];
 state.history=state.history||[];
 state.scoreHistory=state.scoreHistory||[];
 state.notifications=state.notifications||[];
-state.debts.forEach(d=>{d.payments=d.payments||[];d.status=d.status||(d.balance<=0?'closed':'active')});
+state.debts.forEach(d=>{
+  d.payments=d.payments||[];
+  d.status=d.status||(d.balance<=0?'closed':'active');
+  /* P1-4/5 FIX: initial >= balance */
+  if(typeof d.initial!=='number' || d.initial < d.balance) d.initial = d.balance;
+});
 state.accounts.forEach(ensureAccountFields);
 
 /* ============================================================
@@ -767,7 +809,7 @@ function rangeFor(period){
   else if(period==='prev_month'){
     const fm=new Date(now.getFullYear(),now.getMonth()-1,1);
     const tm=new Date(now.getFullYear(),now.getMonth(),0);
-    from=fm.toISOString().slice(0,10);to=tm.toISOString().slice(0,10);
+    from=isoLocal(fm);to=isoLocal(tm);
   } else from=dShift(-29);
   return {from,to};
 }
@@ -779,12 +821,30 @@ function aggRange(period){
   return {inc,exp,net:inc-exp,from,to,done};
 }
 const inLastDays=(d,n)=>{const diff=(new Date()-parseD(d))/86400000;return diff>=0&&diff<=n};
+
 function nextDateForDay(day){
   const now=new Date();
-  let d=new Date(now.getFullYear(),now.getMonth(),day);
-  if(d<new Date(now.getFullYear(),now.getMonth(),now.getDate()))
-    d=new Date(now.getFullYear(),now.getMonth()+1,day);
-  return d;
+  const y=now.getFullYear(),m=now.getMonth(),today=now.getDate();
+  const lastThisMonth=new Date(y,m+1,0).getDate();
+  const dThis=Math.min(day,lastThisMonth);
+  if(dThis>=today){
+    return new Date(y,m,dThis);
+  }
+  const lastNextMonth=new Date(y,m+2,0).getDate();
+  const dNext=Math.min(day,lastNextMonth);
+  return new Date(y,m+1,dNext);
+}
+function lastDueDate(d){
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth(),today=now.getDate();
+  const lastThisMonth=new Date(y,m+1,0).getDate();
+  const dThis=Math.min(d.payDay||1,lastThisMonth);
+  if(dThis<=today){
+    return new Date(y,m,dThis);
+  }
+  const lastPrevMonth=new Date(y,m,0).getDate();
+  const dPrev=Math.min(d.payDay||1,lastPrevMonth);
+  return new Date(y,m-1,dPrev);
 }
 function daysUntilSalary(){
   const now=new Date();const sd=state.settings.salaryDay||5;
@@ -802,12 +862,17 @@ function debtMonths(d){
 }
 const debtInterest=d=>d.balance*((d.rate||0)/100/12);
 const debtProgress=d=>d.initial<=0?0:clamp((1-d.balance/d.initial)*100,0,100);
+
+/* P0-1 FIX: advanceRecurring — переход на 1-е число, затем установка дня */
 function advanceRecurring(date,interval,dayOfMonth){
   const d=new Date(date);
   if(interval==='weekly')d.setDate(d.getDate()+7);
   else if(interval==='monthly'){
+    const targetDay=dayOfMonth||d.getDate();
+    d.setDate(1);
     d.setMonth(d.getMonth()+1);
-    if(dayOfMonth)d.setDate(Math.min(dayOfMonth,new Date(d.getFullYear(),d.getMonth()+1,0).getDate()));
+    const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+    d.setDate(Math.min(targetDay,lastDay));
   } else if(interval==='yearly')d.setFullYear(d.getFullYear()+1);
   else d.setDate(d.getDate()+30);
   return d;
@@ -820,7 +885,8 @@ function recurringInRange(from,to){
     let safety=0;
     while(d<fromD&&safety<500){d=advanceRecurring(d,r.interval,r.dayOfMonth);safety++}
     while(d<=toD&&safety<500){
-      list.push({id:'rec-'+r.id+'-'+d.toISOString().slice(0,10),date:d.toISOString().slice(0,10),
+      const ds=isoLocal(d);
+      list.push({id:'rec-'+r.id+'-'+ds,date:ds,
         title:r.name,type:'Расход',amount:r.amount,accountId:r.accountId,
         kind:'recurring',refId:r.id,status:'pending'});
       d=advanceRecurring(d,r.interval,r.dayOfMonth);safety++;
@@ -836,9 +902,20 @@ function scoreBreakdown(M){
   const f2=clamp(100-M.debtLoad*1.6,0,100);
   const f3=clamp(M.cushionMonths/6*100,0,100);
   const f4=clamp(M.savingsRate/25*50+M.goalProgress/100*50,0,100);
-  const today=new Date().getDate();
-  const overdue=state.debts.filter(d=>d.status==='active'&&d.payDay<today&&d.payDay>=today-7&&d.balance>0).length;
-  const totalDebts=state.debts.filter(d=>d.status==='active').length||1;
+  const now=new Date();
+  const overdue=state.debts.filter(d=>{
+    if(d.status!=='active'||d.balance<=0)return false;
+    const due=lastDueDate(d);
+    if(due>=now)return false;
+    const from=new Date(due);from.setDate(from.getDate()-1);
+    const to=new Date(due);to.setDate(to.getDate()+1);
+    const paid=(d.payments||[]).some(p=>{
+      const pd=parseD(p.date);
+      return pd>=from&&pd<=to;
+    });
+    return !paid;
+  }).length;
+  const totalDebts=state.debts.filter(d=>d.status==='active'&&d.balance>0).length||1;
   const f5=clamp(100-overdue/totalDebts*100,0,100);
   const score=Math.round(f1*.25+f2*.25+f3*.20+f4*.15+f5*.15);
   return {total:clamp(score,0,100),factors:[
@@ -875,7 +952,7 @@ function metrics(){
   const upcomingBeforeSalary=activeDebts.filter(d=>nextDateForDay(d.payDay||1)<=salaryDate).reduce((s,d)=>s+(d.minPayment||0),0);
   const plannedExpenses=state.operations.filter(o=>o.status==='plan'&&o.type==='expense'&&
     parseD(o.date)>=new Date()&&parseD(o.date)<=salaryDate).reduce((s,o)=>s+o.amount,0);
-  const recBeforeSalary=recurringInRange(todayISO(),salaryDate.toISOString().slice(0,10))
+  const recBeforeSalary=recurringInRange(todayISO(),isoLocal(salaryDate))
     .reduce((s,r)=>s+r.amount,0);
   const reserve=(state.settings.reserveForGoals||0)+(state.settings.minReserve||0);
   const freeMoney=avail-upcomingBeforeSalary-plannedExpenses-recBeforeSalary-reserve;
@@ -900,6 +977,7 @@ const scoreColor=s=>s>=65?'var(--accent)':s>=45?'var(--warn)':'var(--red)';
    LAYER STACK
    ============================================================ */
 const layers=[];
+let suppressHistoryBack=false;
 function pushLayer(name,closeFn){layers.push({name,close:closeFn})}
 function popLayer(){
   if(!layers.length)return false;
@@ -926,7 +1004,9 @@ function openSheet(title,html,onSubmit){
   const firstInput=$('#sheetForm input:not([type=hidden]):not([type=checkbox]):not([readonly]),#sheetForm select,#sheetForm textarea');
   if(firstInput)setTimeout(()=>firstInput.focus(),120);
   pushLayer('sheet',closeSheet);
+  try{history.pushState({layer:'sheet',tab:state.ui.tab},'', location.hash)}catch(e){}
 }
+/* P1-7 FIX: closeSheet откатывает history, если верхний state — слой */
 function closeSheet(){
   $('#sheet').classList.remove('open');
   $('#backdrop').classList.remove('open');
@@ -934,6 +1014,15 @@ function closeSheet(){
   for(let i=layers.length-1;i>=0;i--){
     if(layers[i].name==='sheet'){layers.splice(i,1);break}
   }
+  rollbackLayerHistory();
+}
+function rollbackLayerHistory(){
+  try{
+    if(history.state && history.state.layer && !suppressHistoryBack){
+      suppressHistoryBack=true;
+      history.back();
+    }
+  }catch(e){}
 }
 $('#sheetForm').addEventListener('submit',e=>{
   e.preventDefault();
@@ -965,15 +1054,37 @@ const TITLES={
 };
 function go(tab,fromHistory){
   if(!fromHistory){
+    if(state.ui.tab===tab){
+      state.ui.tab=tab;save();render();
+      window.scrollTo({top:0,behavior:'instant'});
+      return;
+    }
     try{history.pushState({tab},'', '#'+tab)}catch(e){}
   }
   state.ui.tab=tab;save();render();
   window.scrollTo({top:0,behavior:'instant'});
 }
 window.addEventListener('popstate',e=>{
-  if(closeTop())return;
-  const tab=e.state&&e.state.tab||'dashboard';
-  go(tab,true);
+  /* P1-7 FIX: если мы сами вызвали history.back() — игнорируем событие */
+  if(suppressHistoryBack){
+    suppressHistoryBack=false;
+    return;
+  }
+  const st=e.state||{};
+  if(st.layer){
+    closeTop();
+    return;
+  }
+  if(layers.length){
+    closeTop();
+    return;
+  }
+  const tab=st.tab||'dashboard';
+  if(TITLES[tab]||tab==='dashboard'){
+    go(tab,true);
+  } else {
+    go('dashboard',true);
+  }
 });
 
 /* ============================================================
@@ -1036,17 +1147,12 @@ function ringSVG(pct,size,stroke,color,label){
 }
 
 /* ============================================================
-   PAGE: DASHBOARD (new home)
+   PAGE: DASHBOARD
    ============================================================ */
 function pageDashboard(){
   const M=metrics();
-  const b={income:0,expense:0};
-  state.operations.forEach(o=>{
-    if(o.status!=='done')return;
-    if(o.type==='income')b.income+=o.amount;
-    if(o.type==='expense')b.expense+=o.amount;
-  });
-  b.balance=b.income-b.expense;
+  /* P1-6 FIX: доход/расход за месяц (как в Analytics) */
+  const month=aggRange('month');
   const mainGoal=state.goals[0];
   const recent=[...state.operations].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
   const banksCount=state.accounts.length;
@@ -1062,8 +1168,8 @@ function pageDashboard(){
       <div class="amount num">${money(M.netWorth)}</div>
       <div class="sub">${banksCount} ${banksCount===1?'счёт':'счетов'} · обновлено сегодня</div>
       <div class="stats">
-        <div><small>Доход</small><b class="num">+${moneyShort(b.income)}</b></div>
-        <div><small>Расход</small><b class="num">−${moneyShort(b.expense)}</b></div>
+        <div><small>Доход</small><b class="num">+${moneyShort(month.inc)}</b></div>
+        <div><small>Расход</small><b class="num">−${moneyShort(month.exp)}</b></div>
         <div><small>Свободно</small><b class="num">${moneyShort(M.avail)}</b></div>
       </div>
     </div>
@@ -1103,7 +1209,7 @@ function pageDashboard(){
 
     ${mainGoal?`
     <div class="hcard" data-nav="goals" style="display:flex;align-items:center;gap:12px">
-      <div style="font-size:26px;flex:none">${mainGoal.emoji}</div>
+      <div style="font-size:26px;flex:none">${esc(mainGoal.emoji)}</div>
       <div style="flex:1;min-width:0">
         <div class="hcard-l" style="margin:0 0 4px">
           <span>Цель: ${esc(mainGoal.name)}</span>
@@ -1135,7 +1241,7 @@ function pageDashboard(){
         <div class="row">
           <div class="ic">${SI('calendar',18)}</div>
           <div class="b"><b>${esc(u.d.name)}</b>
-            <small>${fmtDM(u.date.toISOString().slice(0,10))} · ${u.d.type}</small></div>
+            <small>${fmtDM(isoLocal(u.date))} · ${esc(u.d.type)}</small></div>
           <div class="amt warnc num">${money(u.d.minPayment)}</div>
           <button class="icon-btn" data-act="pay-debt" data-id="${u.d.id}" type="button"
             style="width:36px;height:36px;color:var(--accent)">${SI('check',18)}</button>
@@ -1293,12 +1399,13 @@ function calendarEvents(){
   const now=new Date();
   const y=now.getFullYear(),mo=now.getMonth();
   const first=new Date(y,mo,1),last=new Date(y,mo+1,0);
-  const from=first.toISOString().slice(0,10),to=last.toISOString().slice(0,10);
+  const from=isoLocal(first),to=isoLocal(last);
   state.debts.filter(d=>d.status!=='closed').forEach(d=>{
     for(let i=0;i<2;i++){
-      const dt=new Date(y,mo+i,clamp(d.payDay||1,1,31));
+      const lastDay=new Date(y,mo+i+1,0).getDate();
+      const dt=new Date(y,mo+i,Math.min(clamp(d.payDay||1,1,31),lastDay));
       if(dt<first||dt>last)continue;
-      events.push({id:'debt-'+d.id+'-'+i,date:dt.toISOString().slice(0,10),
+      events.push({id:'debt-'+d.id+'-'+i,date:isoLocal(dt),
         title:d.name,type:d.type,amount:d.minPayment,kind:'debt',refId:d.id});
     }
   });
@@ -1339,7 +1446,7 @@ function pageCalendar(){
       <div class="cal">
         ${days.map(d=>{
           if(d===null)return '<div class="cal-day empty-day"></div>';
-          const ds=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+          const ds=isoLocal(new Date(y,mo,d));
           const evs=byDay[ds]||[];
           const isToday=ds===today;
           const isSel=ds===sel;
@@ -1398,7 +1505,7 @@ function pageCategories(){
       const kids=subs.filter(s=>s.parent===c.id);
       return `<div>
         <div class="row" style="${c.hidden?'opacity:.5':''}">
-          <div class="ic" style="font-size:20px">${c.icon}</div>
+          <div class="ic" style="font-size:20px">${esc(c.icon)}</div>
           <div class="b"><b>${esc(c.name)}</b>
             <small>${c.hidden?'Скрыта':(kids.length?kids.length+' подкат.':'')}</small></div>
           <button class="icon-btn" data-act="toggle-cat" data-type="${type}" data-id="${c.id}" type="button"
@@ -1410,7 +1517,7 @@ function pageCategories(){
         </div>
         ${kids.map(s=>`
           <div class="row" style="margin-left:22px;${s.hidden?'opacity:.5':''}">
-            <div class="ic" style="width:34px;height:34px;font-size:16px">${s.icon}</div>
+            <div class="ic" style="width:34px;height:34px;font-size:16px">${esc(s.icon)}</div>
             <div class="b"><b>${esc(s.name)}</b><small>подкатегория</small></div>
             <button class="icon-btn" data-act="toggle-cat" data-type="${type}" data-id="${s.id}" type="button"
               style="width:32px;height:32px;font-size:14px">${s.hidden?'◌':'◉'}</button>
@@ -1430,7 +1537,7 @@ function pageCategories(){
 }
 
 /* ============================================================
-   PAGE: ACCOUNTS (Банки)
+   PAGE: ACCOUNTS
    ============================================================ */
 function pageAccounts(){
   const M=metrics();
@@ -1574,7 +1681,7 @@ function pageGoals(){
         <div style="display:flex;align-items:center;gap:14px">
           ${ringSVG(prog,66,6,done?'var(--accent)':'var(--violet)',Math.round(prog)+'%')}
           <div style="flex:1;min-width:0">
-            <b style="font-size:16px">${g.emoji} ${esc(g.name)}</b>
+            <b style="font-size:16px">${esc(g.emoji)} ${esc(g.name)}</b>
             <div style="font-size:12px;color:var(--muted);margin-top:4px">
               ${money(g.saved)} из ${money(g.target)}
             </div>
@@ -2051,6 +2158,10 @@ function openQuickAdd(presetDate,presetType){
   `,data=>{
     const amount=Math.abs(parseAmount(data.amount)||0);
     if(!amount){toast('Введите сумму','r');return}
+    /* Проверка: transfer не должен идти на тот же счёт */
+    if(data.type==='transfer' && data.accountId===data.toAccountId){
+      toast('Нельзя перевести на тот же счёт','r');return;
+    }
     const op={
       id:uid(),type:data.type,amount,date:data.date,
       accountId:data.accountId,
@@ -2080,25 +2191,27 @@ function editOp(id){
   const op=state.operations.find(o=>o.id===id);if(!op)return;
   const accOpts=state.accounts.map(a=>`<option value="${a.id}" ${a.id===op.accountId?'selected':''}>${esc(a.name)}</option>`).join('');
   const toOpts=state.accounts.map(a=>`<option value="${a.id}" ${a.id===op.toAccountId?'selected':''}>${esc(a.name)}</option>`).join('');
-  const catOpts=catOptions(op.type==='income'?'income':'expense',op.category);
+  const initType = op.type==='income'?'income':'expense';
+  const initCatId = catIdByName(initType, op.category);
+  const catOpts=catOptions(initType, op.category, initCatId);
   openSheet('Операция',`
     <div class="field"><label>Тип</label>
-      <select name="type">
+      <select name="type" id="opEditType">
         <option value="income" ${op.type==='income'?'selected':''}>Доход</option>
         <option value="expense" ${op.type==='expense'?'selected':''}>Расход</option>
         <option value="transfer" ${op.type==='transfer'?'selected':''}>Перевод</option>
       </select></div>
     <div class="field"><label>Сумма</label>
       <input name="amount" type="text" inputmode="decimal" value="${op.amount}" required></div>
-    <div class="field"><label>Категория</label>
-      <select name="category">${catOpts}</select></div>
+    <div class="field" id="opEditCatField" style="${op.type==='transfer'?'display:none':''}"><label>Категория</label>
+      <select name="category" id="opEditCat">${catOpts}</select></div>
     <div class="r2">
       <div class="field"><label>Дата</label>
         <input name="date" type="date" value="${op.date}"></div>
       <div class="field"><label>Счёт</label>
         <select name="accountId">${accOpts}</select></div>
     </div>
-    <div class="field"><label>Куда (для перевода)</label>
+    <div class="field" id="opEditToField" style="${op.type!=='transfer'?'display:none':''}"><label>Куда (для перевода)</label>
       <select name="toAccountId">${toOpts}</select></div>
     <div class="field"><label>Комментарий</label>
       <input name="comment" value="${esc(op.comment||'')}"></div>
@@ -2109,15 +2222,45 @@ function editOp(id){
       </select></div>
     <button type="button" class="btn block danger" data-del-op="${op.id}" style="margin-top:8px">Удалить</button>
   `,data=>{
-    op.type=data.type;
+    const newType = data.type;
+    let newCategory = '';
+    if(newType !== 'transfer'){
+      newCategory = data.category || '';
+      const exists = (state.categories[newType]||[]).some(c=>c.name===newCategory);
+      if(!exists){
+        const first = (state.categories[newType]||[])[0];
+        newCategory = first ? first.name : '';
+      }
+    }
+    if(newType==='transfer' && data.accountId===data.toAccountId){
+      toast('Нельзя перевести на тот же счёт','r');return;
+    }
+    op.type=newType;
     op.amount=Math.abs(parseAmount(data.amount)||0);
-    op.category=data.type==='transfer'?'':data.category;
+    op.category=newCategory;
     op.date=data.date;op.accountId=data.accountId;
-    op.toAccountId=data.type==='transfer'?data.toAccountId:undefined;
+    op.toAccountId=newType==='transfer'?data.toAccountId:undefined;
     op.comment=(data.comment||'').trim();op.status=data.status;
     save();render();toast('Сохранено','g');
   });
   setTimeout(()=>{
+    const typeSel=$('#opEditType');
+    const catField=$('#opEditCatField');
+    const catSel=$('#opEditCat');
+    const toField=$('#opEditToField');
+    if(typeSel && catSel && catField && toField){
+      typeSel.onchange=()=>{
+        const t=typeSel.value;
+        if(t==='transfer'){
+          catField.style.display='none';
+          toField.style.display='';
+        } else {
+          catField.style.display='';
+          toField.style.display='none';
+          catSel.innerHTML=catOptions(t);
+        }
+      };
+    }
     const b=$('#sheetForm [data-del-op]');
     if(b)b.onclick=()=>{
       if(!confirm('Удалить операцию?'))return;
@@ -2162,7 +2305,17 @@ function editAcc(id){
   setTimeout(()=>{
     const b=$('#sheetForm [data-del-acc]');
     if(b)b.onclick=()=>{
-      if(!confirm('Удалить счёт?'))return;
+      /* P0-4 FIX: проверка связанных записей */
+      const linkedOps = state.operations.filter(o=>o.accountId===id || o.toAccountId===id).length;
+      const linkedDebts = state.debts.filter(d=>d.accountId===id).length;
+      const linkedGoals = state.goals.filter(g=>g.accountId===id).length;
+      const linkedRec = state.recurring.filter(r=>r.accountId===id).length;
+      const total = linkedOps + linkedDebts + linkedGoals + linkedRec;
+      if(total > 0){
+        if(!confirm(`Счёт используется в ${total} записях (операции, долги, цели, recurring). Удалить счёт? Записи останутся, но будут ссылаться на несуществующий счёт.`)) return;
+      } else {
+        if(!confirm('Удалить счёт?'))return;
+      }
       state.accounts=state.accounts.filter(x=>x.id!==id);
       closeSheet();save();render();toast('Удалено','y');
     };
@@ -2204,6 +2357,8 @@ function editDebt(id){
     d.rate=parseFloat(data.rate)||0;
     d.payDay=parseInt(data.payDay)||1;
     d.status=data.status;
+    /* P1-4 FIX: initial >= balance */
+    if(d.initial < d.balance) d.initial = d.balance;
     save();render();toast('Сохранено','g');
   });
   setTimeout(()=>{
@@ -2222,6 +2377,8 @@ function editGoal(id){
   openSheet('Цель',`
     <div class="field"><label>Название</label>
       <input name="name" value="${esc(g.name)}" required></div>
+    <div class="field"><label>Иконка</label>
+      <input name="emoji" value="${esc(g.emoji)}" maxlength="3"></div>
     <div class="r2">
       <div class="field"><label>Сумма</label>
         <input name="target" type="text" inputmode="decimal" value="${g.target}"></div>
@@ -2235,6 +2392,7 @@ function editGoal(id){
     <button type="button" class="btn block danger" data-del-goal="${g.id}" style="margin-top:8px">Удалить</button>
   `,data=>{
     g.name=data.name.trim();
+    g.emoji=(data.emoji||'🎯').slice(0,3);
     g.target=parseAmount(data.target)||0;
     g.saved=parseAmount(data.saved)||0;
     g.date=data.date;g.accountId=data.accountId;
@@ -2289,8 +2447,17 @@ function editRec(id){
   },50);
 }
 
+/* ============================================================
+   payDebt — P0-2/P1-2 FIX
+   ============================================================ */
 function payDebt(id){
   const d=state.debts.find(x=>x.id===id);if(!d||d.status==='closed')return;
+  const acc=state.accounts.find(a=>a.id===d.accountId);
+  if(!acc){
+    toast('Счёт для этого долга удалён. Откройте долг и выберите счёт.','r');
+    editDebt(id);
+    return;
+  }
   openSheet('Внести платёж',`
     <div style="font-size:13px;color:var(--muted);margin-bottom:12px">
       Долг: <b style="color:var(--text)">${esc(d.name)}</b> · остаток ${money(d.balance)}
@@ -2301,27 +2468,79 @@ function payDebt(id){
       <input name="date" type="date" value="${todayISO()}"></div>
   `,data=>{
     const amt=Math.abs(parseAmount(data.amount)||0);if(amt<=0)return;
+    if(!state.accounts.find(a=>a.id===d.accountId)){
+      toast('Счёт больше не существует','r');return;
+    }
+    /* P0-2 FIX: проверка достаточности средств */
+    const accBal=accountBalance(d.accountId);
+    if(accBal<amt){
+      toast('Недостаточно средств на счёте','r');
+      return;
+    }
+    /* P0-3 не относится к payDebt, но проверяем переполнение */
+    if(d.balance<=0){
+      toast('Долг уже закрыт','y');
+      return;
+    }
     const interest=debtInterest(d);
     const bodyPart=Math.max(0,Math.min(amt-interest,d.balance));
+    const interestPaid=Math.min(interest,amt);
+    const interestUnpaid=Math.max(0,interest-amt);
     d.balance=Math.max(0,d.balance-bodyPart);
     d.payments=d.payments||[];
-    d.payments.push({date:data.date,amount:amt,body:bodyPart,interest:Math.min(interest,amt)});
+    d.payments.push({
+      date:data.date,
+      amount:amt,
+      body:bodyPart,
+      interest:interestPaid,
+      interestUnpaid:interestUnpaid
+    });
     if(d.balance<=0)d.status='closed';
+    /* P1-2 FIX: валидация категории */
+    const catName = d.type==='Ипотека' ? pickExpenseCategory('Жильё') : pickExpenseCategory('Другое');
     state.operations.push({id:uid(),type:'expense',amount:amt,date:data.date,
-      accountId:d.accountId,category:d.type==='Ипотека'?'Жильё':'Другое',
+      accountId:d.accountId,category:catName,
       comment:'Платёж «'+d.name+'»',status:'done',createdAt:Date.now()});
     save();render();toast('Платёж внесён','g');
   });
 }
 
+/* P0-3 FIX: goalTopup — проверка переполнения */
 function goalTopup(id){
   const g=state.goals.find(x=>x.id===id);if(!g)return;
-  const src=$(`[data-goal-src="${g.id}"]`).value;
+  const srcEl=$(`[data-goal-src="${g.id}"]`);
   const inp=$(`[data-goal-amt="${g.id}"]`);
+  if(!srcEl||!inp){
+    toast('Не удалось найти поле пополнения','r');return;
+  }
+  const src=srcEl.value;
   const amt=Math.abs(parseAmount(inp.value)||0);
   if(amt<=0){toast('Введите сумму','r');return}
-  g.saved+=amt;
-  state.operations.push({id:uid(),type:'transfer',amount:amt,date:todayISO(),
+  const srcAcc=state.accounts.find(a=>a.id===src);
+  if(!srcAcc){
+    toast('Выбранный счёт не существует. Выберите другой.','r');
+    return;
+  }
+  const dstAcc=state.accounts.find(a=>a.id===g.accountId);
+  if(!dstAcc){
+    toast('Счёт цели удалён. Откройте цель и выберите счёт.','r');
+    return;
+  }
+  const remaining = Math.max(0, g.target - g.saved);
+  if(remaining <= 0){
+    toast('Цель уже достигнута','y');
+    return;
+  }
+  const realAmt = Math.min(amt, remaining);
+  if(accountBalance(src)<realAmt){
+    toast('Недостаточно средств на счёте','r');
+    return;
+  }
+  if(realAmt < amt){
+    toast('Сумма уменьшена до остатка по цели: '+money(realAmt),'y');
+  }
+  g.saved += realAmt;
+  state.operations.push({id:uid(),type:'transfer',amount:realAmt,date:todayISO(),
     accountId:src,toAccountId:g.accountId,
     comment:'Пополнение «'+g.name+'»',status:'done',createdAt:Date.now()});
   save();render();toast('Цель пополнена','g');
@@ -2430,7 +2649,7 @@ function editCat(type,id){
     <div class="field"><label>Название</label>
       <input name="name" value="${esc(cat.name)}" required></div>
     <div class="field"><label>Иконка (эмодзи)</label>
-      <input name="icon" value="${cat.icon}" maxlength="3"></div>
+      <input name="icon" value="${esc(cat.icon)}" maxlength="3"></div>
     <button type="button" class="btn block danger" data-del-cat="${cat.id}" style="margin-top:8px">Удалить</button>
   `,data=>{
     cat.name=data.name.trim();cat.icon=data.icon||'•';
@@ -2439,6 +2658,15 @@ function editCat(type,id){
   setTimeout(()=>{
     const b=$('#sheetForm [data-del-cat]');
     if(b)b.onclick=()=>{
+      /* P0-5 FIX: если категория используется — предложить скрыть */
+      const used = state.operations.some(o=>o.category===cat.name && (
+        type==='income' ? o.type==='income' : o.type==='expense'
+      ));
+      if(used){
+        if(!confirm('Категория используется в операциях. Скрыть её вместо удаления?')) return;
+        cat.hidden = true;
+        closeSheet(); save(); render(); toast('Категория скрыта','y'); return;
+      }
       if(!confirm('Удалить категорию?'))return;
       state.categories[type]=state.categories[type].filter(c=>c.id!==id&&c.parent!==id);
       closeSheet();save();render();toast('Удалено','y');
@@ -2447,7 +2675,7 @@ function editCat(type,id){
 }
 function addSubcat(type,parentId){
   const parent=state.categories[type].find(c=>c.id===parentId);if(!parent)return;
-  openSheet('Подкатегория в «'+parent.name+'»',`
+  openSheet('Подкатегория в «'+esc(parent.name)+'»',`
     <div class="field"><label>Название</label><input name="name" required></div>
     <div class="field"><label>Иконка</label><input name="icon" value="•" maxlength="3"></div>
   `,data=>{
@@ -2532,9 +2760,11 @@ function newDebt(){
         <select name="accountId">${accOpts}</select></div>
     </div>
   `,data=>{
+    const initial=parseAmount(data.initial)||0;
+    const balance=parseAmount(data.balance)||0;
     state.debts.push({
       id:uid(),name:data.name.trim(),type:data.type,
-      initial:parseAmount(data.initial)||0,balance:parseAmount(data.balance)||0,
+      initial:Math.max(initial,balance),balance:balance,
       rate:parseFloat(data.rate)||0,minPayment:parseAmount(data.minPayment)||0,
       payDay:parseInt(data.payDay)||1,accountId:data.accountId,
       startDate:todayISO(),status:'active',payments:[]
@@ -2627,24 +2857,67 @@ function exportCSV(){
 function importJSON(file){
   const reader=new FileReader();
   reader.onload=ev=>{
+    let data;
     try{
-      const data=JSON.parse(ev.target.result);
-      if(!data.accounts||!data.operations)throw new Error('bad');
-      state=data;
-      if(!state.events)state.events=[];
-      if(!state.ui)state.ui={tab:'dashboard',aiChat:[],filters:{}};
-      if(!state.ui.aiChat)state.ui.aiChat=[];
-      if(!state.categories)state.categories=defaultCategories();
-      if(!state.aiSettings)state.aiSettings={enabled:true,language:'ru'};
-      state.accounts.forEach(ensureAccountFields);
-      save();render();toast('Импорт успешен','g');
-    }catch(err){toast('Не удалось загрузить файл','r')}
+      data=JSON.parse(ev.target.result);
+    }catch(err){
+      toast('Не удалось разобрать JSON','r');return;
+    }
+    if(!data||typeof data!=='object'||Array.isArray(data)){
+      toast('Неверный формат файла','r');return;
+    }
+    if(!Array.isArray(data.accounts)||!Array.isArray(data.operations)){
+      toast('JSON должен содержать accounts и operations','r');return;
+    }
+    const base=seed();
+    const next=Object.assign({}, base, {
+      theme: (data.theme==='light'||data.theme==='dark')?data.theme:base.theme,
+      profile: (data.profile&&typeof data.profile==='object')?Object.assign({},base.profile,data.profile):base.profile,
+      settings: (data.settings&&typeof data.settings==='object')?Object.assign({},base.settings,data.settings):base.settings,
+      notificationSettings: (data.notificationSettings&&typeof data.notificationSettings==='object')
+        ?Object.assign({},base.notificationSettings,data.notificationSettings):base.notificationSettings,
+      aiSettings: (data.aiSettings&&typeof data.aiSettings==='object')
+        ?Object.assign({},base.aiSettings,data.aiSettings):base.aiSettings,
+      ui: (data.ui&&typeof data.ui==='object')
+        ?Object.assign({},base.ui,data.ui,{
+            aiChat: Array.isArray(data.ui.aiChat)?data.ui.aiChat:[],
+            filters: (data.ui.filters&&typeof data.ui.filters==='object')
+              ?Object.assign({},base.ui.filters,data.ui.filters):base.ui.filters
+          })
+        : base.ui,
+      categories: (data.categories&&typeof data.categories==='object'
+                    &&Array.isArray(data.categories.income)&&Array.isArray(data.categories.expense))
+        ? data.categories : base.categories,
+      accounts: data.accounts,
+      operations: data.operations,
+      debts: Array.isArray(data.debts)?data.debts:[],
+      goals: Array.isArray(data.goals)?data.goals:[],
+      recurring: Array.isArray(data.recurring)?data.recurring:[],
+      events: Array.isArray(data.events)?data.events:[],
+      history: Array.isArray(data.history)?data.history:[],
+      scoreHistory: Array.isArray(data.scoreHistory)?data.scoreHistory:[],
+      notifications: Array.isArray(data.notifications)?data.notifications:[]
+    });
+    next.debts.forEach(d=>{
+      d.payments=Array.isArray(d.payments)?d.payments:[];
+      d.status=d.status||(d.balance<=0?'closed':'active');
+      if(typeof d.initial!=='number' || d.initial < d.balance) d.initial = d.balance;
+    });
+    next.accounts.forEach(ensureAccountFields);
+    if(!TITLES[next.ui.tab])next.ui.tab='dashboard';
+    /* P1-1 FIX: сброс calSel */
+    next.ui.calSel = todayISO();
+    state=next;
+    save();
+    try{render()}catch(e){console.warn('render after import failed',e)}
+    toast('Импорт успешен','g');
   };
+  reader.onerror=()=>toast('Ошибка чтения файла','r');
   reader.readAsText(file);
 }
 
 /* ============================================================
-   AI (сокращённо — та же логика)
+   AI
    ============================================================ */
 const AI=(function(){
   function hasAccess(){return state.aiSettings&&state.aiSettings.enabled}
@@ -2761,11 +3034,20 @@ function openAISheet(){
   pushLayer('ai',closeAISheet);
   renderAIBody();
   setTimeout(()=>{const i=$('#aiInput');if(i)i.focus()},300);
+  try{history.pushState({layer:'ai',tab:state.ui.tab},'', location.hash)}catch(e){}
 }
+/* P1-7 FIX: closeAISheet откатывает history */
 function closeAISheet(){
   $('#aiSheet').classList.remove('open');
   for(let i=layers.length-1;i>=0;i--){
     if(layers[i].name==='ai'){layers.splice(i,1);break}
+  }
+  rollbackLayerHistory();
+}
+function refreshAIOpen(){
+  const sheet=$('#aiSheet');
+  if(sheet&&sheet.classList.contains('open')){
+    renderAIBody();
   }
 }
 function renderAIBody(){
@@ -2793,7 +3075,7 @@ function sendAI(text){
   const r=AI.ask(text);
   state.ui.aiChat.push({role:'bot',text:r.text,source:r.source});
   if(state.ui.aiChat.length>40)state.ui.aiChat=state.ui.aiChat.slice(-40);
-  save();renderAIBody();
+  save();
 }
 
 /* ============================================================
